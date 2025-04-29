@@ -1,0 +1,227 @@
+<div class="sponsored-section">
+    <div class="section-header">
+        <h3><i class="fas fa-ad"></i> Sponsored</h3>
+        <button class="icon-button" onclick="toggleSponsoredSettings()">
+            <i class="fas fa-ellipsis-h"></i>
+        </button>
+    </div>
+
+    <% if (typeof sponsored !== 'undefined' && Array.isArray(sponsored) && sponsored.length > 0) { %>
+        <div class="sponsored-content">
+            <% sponsored.forEach(ad => { %>
+                <div class="sponsored-item" data-ad-id="<%= ad.id || '' %>">
+                    <div class="ad-media">
+                        <% if (ad.image) { %>
+                            <img src="<%= ad.image %>" 
+                                 alt="<%= ad.title || 'Sponsored content' %>"
+                                 onerror="this.onerror=null;this.parentElement.innerHTML='<div class=\'ad-media-fallback\'><i class=\'fas fa-ad\'></i></div>'">
+                        <% } else { %>
+                            <div class="ad-media-fallback">
+                                <i class="fas fa-ad"></i>
+                            </div>
+                        <% } %>
+                    </div>
+                    <div class="ad-details">
+                        <h4><%= ad.title || 'Sponsored' %></h4>
+                        <p class="ad-domain">
+                            <i class="fas fa-link"></i> <%= ad.domain || 'example.com' %>
+                        </p>
+                        <p class="ad-description"><%= ad.description || 'Promoted content' %></p>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    <% } else { %>
+        <div class="no-sponsored">
+            <i class="fas fa-ad"></i>
+            <p>No sponsored content available</p>
+            <% if (typeof sponsored === 'undefined') { %>
+                <div class="sponsored-loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <span>Loading sponsored content...</span>
+                </div>
+            <% } %>
+        </div>
+    <% } %>
+
+    <div class="sponsored-footer">
+        <button class="text-button" onclick="refreshSponsored()">
+            <i class="fas fa-sync-alt"></i> Refresh
+        </button>
+        <button class="text-button" onclick="showAdPreferences()">
+            <i class="fas fa-sliders-h"></i> Ad Preferences
+        </button>
+    </div>
+</div>
+
+<script>
+// Handle sponsored content interactions
+function toggleSponsoredSettings() {
+    const menu = document.createElement('div');
+    menu.className = 'dropdown-menu';
+    menu.innerHTML = `
+        <button onclick="hideSponsored()"><i class="fas fa-eye-slash"></i> Hide this</button>
+        <button onclick="reportAd()"><i class="fas fa-flag"></i> Report ad</button>
+        <button onclick="whyThisAd()"><i class="fas fa-question-circle"></i> Why this ad?</button>
+    `;
+    
+    document.body.appendChild(menu);
+    positionDropdown(menu, event.currentTarget);
+}
+
+function refreshSponsored() {
+    console.log('Refreshing sponsored content...');
+    // In a real app, this would fetch new sponsored content
+    alert('Sponsored content refreshed');
+}
+
+function showAdPreferences() {
+    console.log('Showing ad preferences...');
+    // Would open Facebook's ad preferences modal
+}
+</script>
+
+<style>
+.sponsored-section {
+    background: var(--card-bg);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.section-header h3 {
+    font-size: 15px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.icon-button {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+}
+
+.icon-button:hover {
+    background: var(--hover-gray);
+}
+
+.sponsored-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sponsored-item {
+    display: flex;
+    gap: 12px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+}
+
+.sponsored-item:hover {
+    background: var(--hover-gray);
+}
+
+.ad-media {
+    width: 100px;
+    height: 100px;
+    border-radius: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: var(--background);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ad-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ad-media-fallback {
+    color: var(--text-secondary);
+    font-size: 24px;
+}
+
+.ad-details {
+    flex: 1;
+}
+
+.ad-details h4 {
+    font-size: 15px;
+    margin-bottom: 4px;
+}
+
+.ad-domain {
+    color: var(--text-secondary);
+    font-size: 13px;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.ad-description {
+    font-size: 14px;
+    color: var(--text-primary);
+}
+
+.no-sponsored {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 16px;
+    color: var(--text-secondary);
+}
+
+.no-sponsored i {
+    font-size: 24px;
+}
+
+.sponsored-loading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.sponsored-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--divider);
+}
+
+.text-button {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.text-button:hover {
+    text-decoration: underline;
+}
+</style>

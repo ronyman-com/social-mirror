@@ -1,0 +1,294 @@
+<div class="story" data-story-id="<%= story.id %>">
+    <div class="story-background">
+      <% if (story.image) { %>
+        <img src="<%= story.image %>" alt="<%= story.user.name %>'s story" class="story-image">
+      <% } else { %>
+        <div class="story-default">
+          <i class="fas fa-user-circle"></i>
+        </div>
+      <% } %>
+      <div class="story-gradient-overlay"></div>
+    </div>
+    
+    <div class="story-avatar">
+      <% if (story.user.avatar) { %>
+        <img src="<%= story.user.avatar %>" alt="<%= story.user.name %>">
+      <% } else { %>
+        <i class="fas fa-user-circle"></i>
+      <% } %>
+    </div>
+    
+    <div class="story-user">
+      <%= story.user.name %>
+    </div>
+  </div>
+  
+  <style>
+  .story {
+    position: relative;
+    width: 110px;
+    height: 195px;
+    border-radius: 10px;
+    overflow: hidden;
+    flex-shrink: 0;
+    cursor: pointer;
+    margin-right: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+  }
+  
+  .story:hover {
+    transform: scale(1.02);
+  }
+  
+  .story-background {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+  
+  .story-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+  
+  .story:hover .story-image {
+    transform: scale(1.05);
+  }
+  
+  .story-default {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, #f46b45, #eea849);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 40px;
+  }
+  
+  .story-gradient-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40%;
+    background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+  }
+  
+  .story-avatar {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 3px solid #1877f2;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  
+  .story-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .story-avatar i {
+    font-size: 40px;
+    color: #65676b;
+  }
+  
+  .story-user {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    color: white;
+    font-weight: 600;
+    font-size: 13px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+  }
+  </style>
+  
+  <script>
+  document.querySelectorAll('.story').forEach(story => {
+    story.addEventListener('click', function() {
+      const storyId = this.getAttribute('data-story-id');
+      
+      // Create story viewer modal
+      const storyViewer = document.createElement('div');
+      storyViewer.className = 'story-viewer-modal';
+      storyViewer.innerHTML = `
+        <div class="story-viewer-container">
+          <div class="story-viewer-header">
+            <div class="story-progress-bars">
+              <div class="progress-bar"></div>
+            </div>
+            <div class="story-viewer-controls">
+              <button class="close-story">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+          <div class="story-content">
+            <img src="${this.querySelector('.story-background img')?.src || ''}" alt="Story">
+          </div>
+          <div class="story-viewer-footer">
+            <div class="story-reply">
+              <input type="text" placeholder="Send message">
+              <button><i class="far fa-paper-plane"></i></button>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(storyViewer);
+      
+      // Close story functionality
+      storyViewer.querySelector('.close-story').addEventListener('click', () => {
+        document.body.removeChild(storyViewer);
+      });
+      
+      // Close when clicking outside
+      storyViewer.addEventListener('click', (e) => {
+        if (e.target === storyViewer) {
+          document.body.removeChild(storyViewer);
+        }
+      });
+      
+      // Track story view (analytics)
+      fetch(`/api/stories/${storyId}/view`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'same-origin'
+      }).catch(err => console.error('Error tracking story view:', err));
+    });
+  });
+  </script>
+  
+  <style>
+  /* Story Viewer Modal Styles */
+  .story-viewer-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.9);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .story-viewer-container {
+    width: 100%;
+    max-width: 400px;
+    height: 90vh;
+    background: black;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .story-viewer-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 16px;
+    z-index: 10;
+  }
+  
+  .story-progress-bars {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 16px;
+  }
+  
+  .progress-bar {
+    flex: 1;
+    height: 3px;
+    background: rgba(255,255,255,0.4);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  
+  .progress-bar::after {
+    content: '';
+    display: block;
+    width: 0;
+    height: 100%;
+    background: white;
+    animation: progress 5s linear forwards;
+  }
+  
+  @keyframes progress {
+    to { width: 100%; }
+  }
+  
+  .close-story {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    float: right;
+  }
+  
+  .story-content {
+    width: 100%;
+    height: 100%;
+  }
+  
+  .story-content img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  
+  .story-viewer-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 16px;
+  }
+  
+  .story-reply {
+    display: flex;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50px;
+    padding: 8px 12px;
+  }
+  
+  .story-reply input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: white;
+    outline: none;
+  }
+  
+  .story-reply button {
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+  }
+  </style>

@@ -1,0 +1,732 @@
+<!-- C:\Users\USER\OneDrive\OpenSource\AweSome-ReadME\facebook-mirror\templates\default\base\nav.ejs -->
+<header class="main-header">
+    <div class="header-container">
+      <!-- Left section with logo and search -->
+      <div class="header-left">
+        <div class="logo">
+          <i class="fab fa-facebook"></i>
+        </div>
+        <div class="search-bar">
+          <i class="fas fa-search"></i>
+          <input type="text" placeholder="Search Facebook">
+        </div>
+      </div>
+      
+      <!-- Center navigation -->
+      <div class="header-center">
+        <nav class="main-nav">
+          <a href="/" class="nav-item active">
+            <i class="fas fa-home"></i>
+          </a>
+          <a href="#" class="nav-item">
+            <i class="fas fa-tv"></i>
+          </a>
+          <a href="#" class="nav-item">
+            <i class="fas fa-store"></i>
+          </a>
+          <a href="#" class="nav-item">
+            <i class="fas fa-users"></i>
+          </a>
+        </nav>
+      </div>
+      
+      <!-- Right icons -->
+      <div class="header-right">
+        <div class="menu-icon" id="menuButton">
+          <i class="fas fa-bars"></i>
+          <div class="menu-dropdown" id="menuDropdown">
+            <div class="menu-columns">
+              <div class="menu-column">
+                <div class="menu-item">
+                  <i class="fas fa-calendar"></i>
+                  <span>Events</span>
+                </div>
+                <div class="menu-item">
+                  <i class="fas fa-users"></i>
+                  <span>Groups</span>
+                </div>
+                <div class="menu-item">
+                  <i class="fas fa-flag"></i>
+                  <span>Pages</span>
+                </div>
+                <div class="menu-item">
+                  <i class="fas fa-robot"></i>
+                  <span>AI Tools</span>
+                </div>
+                <div class="menu-item">
+                  <i class="fas fa-ellipsis-h"></i>
+                  <span>See More</span>
+                </div>
+              </div>
+              <div class="menu-column">
+                <div class="menu-item">
+                  <i class="fas fa-edit"></i>
+                  <span>Create Post</span>
+                </div>
+                <div class="menu-item">
+                  <i class="fas fa-video"></i>
+                  <span>Create Reel</span>
+                </div>
+                <div class="menu-item">
+                  <i class="fas fa-calendar-plus"></i>
+                  <span>Create Event</span>
+                </div>
+                <div class="menu-item">
+                  <i class="fas fa-hand-holding-heart"></i>
+                  <span>Fundraiser</span>
+                </div>
+                <div class="menu-item">
+                  <i class="fas fa-ad"></i>
+                  <span>Create Ad</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="notification-icon">
+          <i class="fas fa-bell"></i>
+          <span class="notification-badge">3</span>
+        </div>
+        
+        <div class="messenger-icon">
+          <i class="fas fa-comment-dots"></i>
+          <span class="messenger-badge">5</span>
+        </div>
+        
+        <div class="user-icon" id="userMenuButton">
+          <% if (typeof user !== 'undefined' && user.avatar) { %>
+            <img src="<%= user.avatar %>" class="user-avatar">
+          <% } else { %>
+            <i class="fas fa-user-circle"></i>
+          <% } %>
+          <div class="user-dropdown" id="userMenu">
+            <div class="user-dropdown-header">
+              <div class="user-info">
+                <% if (typeof user !== 'undefined' && user.avatar) { %>
+                  <img src="<%= user.avatar %>" class="dropdown-avatar">
+                <% } else { %>
+                  <i class="fas fa-user-circle dropdown-avatar-icon"></i>
+                <% } %>
+                <div class="user-name"><% if (typeof user === 'undefined') { %>
+                    <% user = { name: 'Guest User', avatar: null } %>
+                  <% } %></div>
+              </div>
+              <div class="profile-link">
+                <a href="#">See all profiles</a>
+              </div>
+            </div>
+            
+            <div class="dropdown-divider"></div>
+            
+            <div class="dropdown-item">
+              <i class="fas fa-user"></i>
+              <span>Profile</span>
+            </div>
+            <div class="dropdown-item">
+              <i class="fas fa-comment-alt"></i>
+              <span>Feedback</span>
+            </div>
+            <div class="dropdown-item">
+              <i class="fas fa-cog"></i>
+              <span>Settings & privacy</span>
+              <i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="dropdown-item">
+              <i class="fas fa-question-circle"></i>
+              <span>Help & support</span>
+              <i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="dropdown-item">
+              <i class="fas fa-moon"></i>
+              <span>Display & accessibility</span>
+              <i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="dropdown-item">
+              <i class="fas fa-sign-out-alt"></i>
+              <span>Log Out</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+  
+  <style>
+    /* Header Styles */
+    .main-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 56px;
+      background: #fff;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+      z-index: 1000;
+      padding: 0 16px;
+    }
+  
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 100%;
+      max-width: 100%;
+    }
+  
+    /* Left Section */
+    .header-left {
+      display: flex;
+      align-items: center;
+      flex: 1;
+      min-width: 0;
+    }
+  
+    .logo i {
+      color: #1877f2;
+      font-size: 40px;
+      margin-right: 10px;
+    }
+  
+    .search-bar {
+      background: #f0f2f5;
+      height: 40px;
+      border-radius: 50px;
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      flex: 1;
+      max-width: 240px;
+    }
+  
+    .search-bar i {
+      color: #65676b;
+      margin-right: 8px;
+    }
+  
+    .search-bar input {
+      background: transparent;
+      border: none;
+      outline: none;
+      width: 100%;
+    }
+  
+    /* Center Navigation */
+    .header-center {
+      flex: 2;
+      justify-content: center;
+    }
+  
+    .main-nav {
+      display: flex;
+      height: 100%;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+  
+    .nav-item {
+      flex: 1;
+      min-width: 80px;
+      max-width: 112px;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #65676b;
+      position: relative;
+    }
+  
+    .nav-item.active {
+      color: #1877f2;
+    }
+  
+    .nav-item.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 20px;
+      right: 20px;
+      height: 3px;
+      background: #1877f2;
+    }
+  
+    .nav-item i {
+      font-size: 24px;
+    }
+  
+    /* Right Icons */
+    .header-right {
+      display: flex;
+      align-items: center;
+      flex: 1;
+      justify-content: flex-end;
+      gap: 4px;
+    }
+  
+    .menu-icon,
+    .notification-icon,
+    .messenger-icon,
+    .user-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      position: relative;
+    }
+  
+    .menu-icon:hover,
+    .notification-icon:hover,
+    .messenger-icon:hover,
+    .user-icon:hover {
+      background: #f0f2f5;
+    }
+  
+    /* Badges */
+    .notification-badge,
+    .messenger-badge {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      background: #f02849;
+      color: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      font-size: 12px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+    }
+  
+    /* Menu Dropdown */
+    .menu-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 12px 28px 0 rgba(0,0,0,0.2);
+      width: 400px;
+      padding: 16px;
+      display: none;
+      z-index: 2000;
+    }
+  
+    .menu-columns {
+      display: flex;
+      gap: 16px;
+    }
+  
+    .menu-column {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+  
+    .menu-item {
+      display: flex;
+      align-items: center;
+      padding: 8px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  
+    .menu-item:hover {
+      background: #f0f2f5;
+    }
+  
+    .menu-item i {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #e4e6eb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-right: 12px;
+      color: #1877f2;
+    }
+  
+    .menu-item span {
+      font-size: 15px;
+      font-weight: 500;
+    }
+  
+    /* User Dropdown */
+    .user-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 12px 28px 0 rgba(0,0,0,0.2);
+      width: 360px;
+      padding: 8px 0;
+      display: none;
+      z-index: 2000;
+    }
+  
+    .user-dropdown-header {
+      padding: 12px 16px;
+    }
+  
+    .user-info {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+  
+    .dropdown-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 12px;
+    }
+  
+    .dropdown-avatar-icon {
+      font-size: 60px;
+      color: #65676b;
+      margin-right: 12px;
+    }
+  
+    .user-name {
+      font-weight: 600;
+      font-size: 17px;
+    }
+  
+    .profile-link a {
+      color: #1877f2;
+      font-size: 15px;
+      text-decoration: none;
+    }
+  
+    .profile-link a:hover {
+      text-decoration: underline;
+    }
+  
+    .dropdown-divider {
+      height: 1px;
+      background: #dadde1;
+      margin: 8px 0;
+    }
+  
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      padding: 10px 16px;
+      cursor: pointer;
+      position: relative;
+    }
+  
+    .dropdown-item:hover {
+      background: #f0f2f5;
+    }
+  
+    .dropdown-item i {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #e4e6eb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-right: 12px;
+      color: #1877f2;
+    }
+  
+    .dropdown-item i.fa-chevron-right {
+      margin-left: auto;
+      margin-right: 0;
+      background: transparent;
+      color: #65676b;
+      font-size: 14px;
+    }
+  
+    .dropdown-item span {
+      font-size: 15px;
+    }
+  
+    .user-avatar {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+  
+    /* Responsive */
+    @media (max-width: 1260px) {
+      .header-center {
+        flex: 1;
+      }
+      .nav-item {
+        min-width: 60px;
+      }
+    }
+  
+    @media (max-width: 1100px) {
+      .main-nav {
+        display: none;
+      }
+      .search-bar {
+        max-width: 180px;
+      }
+    }
+  
+    @media (max-width: 680px) {
+      .search-bar {
+        display: none;
+      }
+      .logo i {
+        font-size: 32px;
+      }
+      .notification-icon,
+      .messenger-icon {
+        display: none;
+      }
+    }
+  </style>
+  
+  <script>
+    // Toggle menu dropdown
+    document.getElementById('menuButton').addEventListener('click', function(e) {
+      e.stopPropagation();
+      const menu = document.getElementById('menuDropdown');
+      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+      // Close user dropdown if open
+      document.getElementById('userMenu').style.display = 'none';
+    });
+  
+    // Toggle user dropdown
+    document.getElementById('userMenuButton').addEventListener('click', function(e) {
+      e.stopPropagation();
+      const menu = document.getElementById('userMenu');
+      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+      // Close menu dropdown if open
+      document.getElementById('menuDropdown').style.display = 'none';
+    });
+  
+    // Close dropdowns when clicking elsewhere
+    document.addEventListener('click', function() {
+      document.getElementById('menuDropdown').style.display = 'none';
+      document.getElementById('userMenu').style.display = 'none';
+    });
+
+    
+  // Wait for DOM to be fully loaded
+  document.addEventListener('DOMContentLoaded', function() {
+    // Toggle menu dropdown
+    const menuButton = document.getElementById('menuButton');
+    const menuDropdown = document.getElementById('menuDropdown');
+    
+    if (menuButton) {
+      menuButton.addEventListener('click', function(e) {
+        e.stopPropagation();
+        menuDropdown.style.display = menuDropdown.style.display === 'block' ? 'none' : 'block';
+        // Close user dropdown if open
+        userMenu.style.display = 'none';
+      });
+    }
+
+    // Toggle user dropdown
+    const userMenuButton = document.getElementById('userMenuButton');
+    const userMenu = document.getElementById('userMenu');
+    
+    if (userMenuButton) {
+      userMenuButton.addEventListener('click', function(e) {
+        e.stopPropagation();
+        userMenu.style.display = userMenu.style.display === 'block' ? 'none' : 'block';
+        // Close menu dropdown if open
+        menuDropdown.style.display = 'none';
+      });
+    }
+
+    // Close dropdowns when clicking elsewhere
+    document.addEventListener('click', function() {
+      if (menuDropdown) menuDropdown.style.display = 'none';
+      if (userMenu) userMenu.style.display = 'none';
+    });
+
+    // Close dropdowns when pressing Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        if (menuDropdown) menuDropdown.style.display = 'none';
+        if (userMenu) userMenu.style.display = 'none';
+      }
+    });
+  });
+
+  </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // DOM Elements
+      const menuButton = document.getElementById('menuButton');
+      const menuDropdown = document.getElementById('menuDropdown');
+      const userMenuButton = document.getElementById('userMenuButton');
+      const userMenu = document.getElementById('userMenu');
+      const notificationIcon = document.querySelector('.notification-icon');
+      const messengerIcon = document.querySelector('.messenger-icon');
+      
+      // Create dropdown elements for notifications and messenger if they don't exist
+      const createDropdown = (parent, content) => {
+        let dropdown = parent.querySelector('.dropdown');
+        if (!dropdown) {
+          dropdown = document.createElement('div');
+          dropdown.className = 'dropdown';
+          dropdown.innerHTML = content;
+          parent.appendChild(dropdown);
+          
+          // Position the dropdown below the icon
+          const rect = parent.getBoundingClientRect();
+          dropdown.style.position = 'absolute';
+          dropdown.style.top = `${rect.bottom + window.scrollY}px`;
+          dropdown.style.right = `${window.innerWidth - rect.right}px`;
+        }
+        return dropdown;
+      };
+  
+      // Toggle any dropdown
+      const toggleDropdown = (dropdown, closeOthers = true) => {
+        if (closeOthers) {
+          closeAllDropdowns();
+        }
+        if (dropdown) {
+          dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        }
+      };
+  
+      // Close all dropdowns
+      const closeAllDropdowns = () => {
+        const allDropdowns = document.querySelectorAll('.dropdown, .menu-dropdown, .user-dropdown');
+        allDropdowns.forEach(dropdown => {
+          dropdown.style.display = 'none';
+        });
+      };
+  
+      // Menu Dropdown
+      if (menuButton && menuDropdown) {
+        menuButton.addEventListener('click', function(e) {
+          e.stopPropagation();
+          toggleDropdown(menuDropdown);
+        });
+      }
+  
+      // User Dropdown
+      if (userMenuButton && userMenu) {
+        userMenuButton.addEventListener('click', function(e) {
+          e.stopPropagation();
+          toggleDropdown(userMenu);
+        });
+      }
+  
+      // Notification Dropdown
+      if (notificationIcon) {
+        notificationIcon.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const dropdown = createDropdown(notificationIcon, `
+            <div class="dropdown-content">
+              <div class="dropdown-header">Notifications</div>
+              <div class="dropdown-item">New friend request</div>
+              <div class="dropdown-item">Page liked your post</div>
+              <div class="dropdown-item">3 new reactions</div>
+            </div>
+          `);
+          toggleDropdown(dropdown);
+        });
+      }
+  
+      // Messenger Dropdown
+      if (messengerIcon) {
+        messengerIcon.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const dropdown = createDropdown(messengerIcon, `
+            <div class="dropdown-content">
+              <div class="dropdown-header">Messenger</div>
+              <div class="dropdown-item">New message from Sarah</div>
+              <div class="dropdown-item">Mark replied to your message</div>
+              <div class="dropdown-item">5 unread conversations</div>
+            </div>
+          `);
+          toggleDropdown(dropdown);
+        });
+      }
+  
+      // Close dropdowns when clicking elsewhere or pressing Escape
+      document.addEventListener('click', closeAllDropdowns);
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          closeAllDropdowns();
+        }
+      });
+  
+      // Add hover effects
+      const headerIcons = document.querySelectorAll('.menu-icon, .notification-icon, .messenger-icon, .user-icon');
+      headerIcons.forEach(icon => {
+        icon.addEventListener('mouseenter', function() {
+          this.style.backgroundColor = '#f0f2f5';
+        });
+        icon.addEventListener('mouseleave', function() {
+          this.style.backgroundColor = '';
+        });
+      });
+    });
+  </script>
+  
+  <style>
+    /* Add these styles to your existing CSS */
+    .dropdown {
+      display: none;
+      position: absolute;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 12px 28px 0 rgba(0,0,0,0.2);
+      width: 360px;
+      padding: 8px 0;
+      z-index: 2000;
+      right: 0;
+      top: 100%;
+    }
+  
+    .dropdown-content {
+      padding: 8px 0;
+    }
+  
+    .dropdown-header {
+      padding: 8px 16px;
+      font-weight: 600;
+      font-size: 16px;
+      border-bottom: 1px solid #ddd;
+      margin-bottom: 8px;
+    }
+  
+    .dropdown-item {
+      padding: 8px 16px;
+      cursor: pointer;
+    }
+  
+    .dropdown-item:hover {
+      background: #f0f2f5;
+    }
+  
+    /* Animation for dropdowns */
+    .menu-dropdown, .user-dropdown, .dropdown {
+      transform-origin: top right;
+      animation: fadeIn 0.2s ease-out;
+    }
+  
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.95) translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+  </style>

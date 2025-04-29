@@ -1,0 +1,82 @@
+<%- include('../partials/header', { title: 'Forgot Password' }) %>
+
+<div class="auth-container">
+    <div class="login-box">
+        <div class="logo">
+            <img src="/images/logo.png" alt="Facebook Mirror">
+        </div>
+        
+        <h1>Reset Your Password</h1>
+        <p>Enter your email to receive a password reset link</p>
+        
+        <% if (messages && messages.length) { %>
+            <div class="alert alert-<%= messages[0].type || 'danger' %>">
+                <%= messages[0].text %>
+            </div>
+        <% } %>
+
+        <div class="login-options">
+            <form action="/auth/forgot-password" method="POST" class="email-login">
+                <input 
+                    type="email" 
+                    name="email" 
+                    placeholder="Email address"
+                    required
+                >
+                <button type="submit" class="btn-login">Send Reset Link</button>
+            </form>
+            
+            <div class="divider"></div>
+            
+            <div class="alternative-options">
+                <a href="/auth/facebook" class="btn-fb-login">
+                    <i class="icon fb-icon"></i>
+                    Continue with Facebook
+                </a>
+                <a href="/auth/login" class="btn-login">
+                    <i class="icon login-icon"></i>
+                    Return to Login
+                </a>
+            </div>
+        </div>
+        
+        <div class="signup-prompt">
+            <p>Don't have an account? <a href="/auth/signup">Sign up</a></p>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>
+
+<style>
+    /* Additional specific styles for forgot password page */
+    .alternative-options {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .btn-login[type="submit"] {
+        width: 100%;
+        margin-top: 10px;
+    }
+    
+    .alert {
+        padding: 12px;
+        border-radius: 6px;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+    
+    .alert-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+    
+    .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+</style>

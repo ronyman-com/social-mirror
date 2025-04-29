@@ -1,0 +1,35 @@
+<%- include('../partials/header', { title: 'Login' }) %>
+
+<div class="auth-container">
+    <div class="login-box">
+        <div class="logo">
+            <img src="/assets/images/default-logo.png" alt="Facebook Mirror">
+        </div>
+        
+        <h1>Welcome to Facebook Mirror</h1>
+        <p>Connect with friends and manage your Facebook pages</p>
+        
+        <div class="login-options">
+            <a href="/auth/facebook" class="btn-fb-login">
+                <i class="icon fb-icon"></i>
+                Continue with Facebook
+            </a>
+            
+            <div class="divider">or</div>
+            
+            <form class="email-login">
+                <input type="email" placeholder="Email address">
+                <input type="password" placeholder="Password">
+                <button type="submit" class="btn-login">Log In</button>
+            </form>
+            
+            <a href="/forgot-password" class="forgot-password">Forgot password?</a>
+        </div>
+        
+        <div class="signup-prompt">
+            <p>Don't have an account? <a href="/signup">Sign up</a></p>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

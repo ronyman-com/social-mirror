@@ -1,0 +1,49 @@
+<% if (typeof user !== 'undefined' && user) { %>
+    <div class="left-sidebar">
+        <!-- User Profile -->
+        <div class="sidebar-item active">
+            <img class="profile-pic" 
+                 src="<%= user.avatar || '/assets/images/default-avatar.jpg' %>" 
+                 alt="Profile"
+                 onerror="this.src='/images/default-avatar.jpg'">
+            <span><%= user.name || 'User' %></span>
+        </div>
+        
+        <!-- Main Menu Items -->
+        <% if (typeof sidebar !== 'undefined' && sidebar.menu && Array.isArray(sidebar.menu)) { %>
+            <% sidebar.menu.forEach(item => { %>
+                <a href="<%= item.link || '#' %>" class="sidebar-item">
+                    <i class="icon <%= item.icon || 'default' %>-icon"></i>
+                    <span><%= item.title || 'Menu Item' %></span>
+                </a>
+            <% }); %>
+        <% } %>
+        
+        <div class="divider"></div>
+        
+        <!-- Shortcuts Header -->
+        <div class="sidebar-header">Your Shortcuts</div>
+        
+        <!-- Dynamic Shortcuts -->
+        <% if (typeof sidebar !== 'undefined' && sidebar.shortcuts && Array.isArray(sidebar.shortcuts)) { %>
+            <% sidebar.shortcuts.forEach(shortcut => { %>
+                <a href="<%= shortcut.link || '#' %>" class="sidebar-item">
+                    <% if (shortcut.icon) { %>
+                        <i class="icon <%= shortcut.icon %>-icon"></i>
+                    <% } else { %>
+                        <img src="<%= shortcut.image || '/assets/images/default-shortcut.png' %>" 
+                             alt="<%= shortcut.title || 'Shortcut' %>"
+                             onerror="this.src='/images/default-shortcut.png'">
+                    <% } %>
+                    <span><%= shortcut.title || 'Shortcut' %></span>
+                </a>
+            <% }); %>
+        <% } %>
+        
+        <!-- Create Page Option -->
+        <div class="sidebar-item">
+            <i class="icon create-page-icon"></i>
+            <span>Create Page</span>
+        </div>
+    </div>
+<% } %>

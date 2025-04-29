@@ -1,0 +1,177 @@
+<!-- C:\Users\USER\OneDrive\OpenSource\AweSome-ReadME\facebook-mirror\templates\default\base\user-menu.ejs -->
+<div class="user-menu-container">
+    <!-- Header with user info -->
+    <div class="user-menu-header">
+        <% if (typeof user !== 'undefined') { %>
+            <div class="user-menu-avatar">
+                <% if (user.avatar) { %>
+                    <img src="<%= user.avatar %>" alt="<%= user.name %>">
+                <% } else { %>
+                    <i class="fas fa-user-circle"></i>
+                <% } %>
+            </div>
+            <div class="user-menu-info">
+                <div class="user-name"><%= user.name %></div>
+                <div class="user-see-profile">See your profile</div>
+            </div>
+        <% } %>
+    </div>
+
+    <div class="menu-divider"></div>
+
+    <!-- Main menu items -->
+    <div class="menu-items">
+        <a href="#" class="menu-item">
+            <div class="menu-icon">
+                <i class="fas fa-cog"></i>
+            </div>
+            <div class="menu-text">Settings & privacy</div>
+            <div class="menu-arrow">
+                <i class="fas fa-chevron-right"></i>
+            </div>
+        </a>
+
+        <a href="#" class="menu-item">
+            <div class="menu-icon">
+                <i class="fas fa-question-circle"></i>
+            </div>
+            <div class="menu-text">Help & support</div>
+            <div class="menu-arrow">
+                <i class="fas fa-chevron-right"></i>
+            </div>
+        </a>
+
+        <a href="#" class="menu-item">
+            <div class="menu-icon">
+                <i class="fas fa-moon"></i>
+            </div>
+            <div class="menu-text">Display & accessibility</div>
+            <div class="menu-arrow">
+                <i class="fas fa-chevron-right"></i>
+            </div>
+        </a>
+
+        <a href="#" class="menu-item">
+            <div class="menu-icon">
+                <i class="fas fa-comment-alt"></i>
+            </div>
+            <div class="menu-text">Give feedback</div>
+        </a>
+    </div>
+
+    <div class="menu-divider"></div>
+
+    <!-- Logout -->
+    <a href="/logout" class="menu-item logout">
+        <div class="menu-icon">
+            <i class="fas fa-sign-out-alt"></i>
+        </div>
+        <div class="menu-text">Log Out</div>
+    </a>
+</div>
+
+<style>
+    .user-menu-container {
+        width: 100%;
+        padding: 8px 0;
+    }
+
+    .user-menu-header {
+        display: flex;
+        align-items: center;
+        padding: 8px 16px;
+        cursor: pointer;
+    }
+
+    .user-menu-header:hover {
+        background-color: #f0f2f5;
+        border-radius: 6px;
+    }
+
+    .user-menu-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin-right: 12px;
+        background: #e4e6eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .user-menu-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .user-menu-avatar i {
+        font-size: 36px;
+        color: #65676b;
+    }
+
+    .user-name {
+        font-weight: 600;
+        font-size: 15px;
+        color: #050505;
+    }
+
+    .user-see-profile {
+        font-size: 13px;
+        color: #65676b;
+    }
+
+    .menu-divider {
+        height: 1px;
+        background-color: #ddd;
+        margin: 8px 0;
+    }
+
+    .menu-items {
+        padding: 0 8px;
+    }
+
+    .menu-item {
+        display: flex;
+        align-items: center;
+        padding: 8px;
+        border-radius: 6px;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .menu-item:hover {
+        background-color: #f0f2f5;
+    }
+
+    .menu-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background-color: #e4e6eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 12px;
+        color: #050505;
+    }
+
+    .menu-text {
+        flex: 1;
+        font-size: 15px;
+    }
+
+    .menu-arrow {
+        color: #65676b;
+    }
+
+    .logout .menu-icon {
+        color: #f02849;
+        background-color: rgba(240, 40, 73, 0.1);
+    }
+
+    .logout .menu-text {
+        color: #f02849;
+    }
+</style>

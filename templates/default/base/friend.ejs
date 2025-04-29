@@ -1,0 +1,67 @@
+<!-- C:\Users\USER\OneDrive\OpenSource\AweSome-ReadME\facebook-mirror\templates\default\base\friend.ejs -->
+<% if (typeof friend !== 'undefined') { %>
+    <div class="friend-card">
+        <div class="friend-cover-photo">
+            <% if (friend.coverPhoto) { %>
+                <img src="<%= friend.coverPhoto %>" alt="Cover photo" class="cover-photo">
+            <% } else { %>
+                <div class="default-cover-photo"></div>
+            <% } %>
+            <div class="friend-avatar-container">
+                <% if (friend.avatar) { %>
+                    <img src="<%= friend.avatar %>" alt="<%= friend.name || 'Friend' %>" class="friend-avatar">
+                <% } else { %>
+                    <div class="default-friend-avatar">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+
+        <div class="friend-info">
+            <h4 class="friend-name"><%= friend.name || 'Facebook User' %></h4>
+            <% if (friend.mutualFriends > 0) { %>
+                <p class="mutual-friends">
+                    <i class="fas fa-user-friends"></i>
+                    <%= friend.mutualFriends %> mutual friend<%= friend.mutualFriends !== 1 ? 's' : '' %>
+                </p>
+            <% } %>
+
+            <div class="friend-actions">
+                <button class="friend-action-btn confirm">
+                    <i class="fas fa-check"></i> Confirm
+                </button>
+                <button class="friend-action-btn delete">
+                    <i class="fas fa-times"></i> Delete
+                </button>
+            </div>
+        </div>
+    </div>
+<% } else { %>
+    <div class="friend-error">
+        <i class="fas fa-exclamation-triangle"></i>
+        <p>Friend information not available</p>
+    </div>
+<% } %>
+
+<style>
+    /* All the previous CSS styles remain the same */
+    .friend-error {
+        padding: 16px;
+        text-align: center;
+        color: #65676b;
+        background: #f0f2f5;
+        border-radius: 8px;
+    }
+    
+    .friend-error i {
+        font-size: 24px;
+        color: #f02849;
+        margin-bottom: 8px;
+    }
+    
+    .friend-error p {
+        margin: 0;
+    }
+</style>
+

@@ -1,0 +1,51 @@
+{
+  "menu": [
+    {
+      "title": "Friends",
+      "icon": "friends",
+      "link": "/friends"
+    },
+    {
+      "title": "Groups",
+      "icon": "groups",
+      "link": "/groups"
+    },
+    {
+      "title": "Marketplace",
+      "icon": "marketplace",
+      "link": "/marketplace"
+    },
+    {
+      "title": "Watch",
+      "icon": "watch",
+      "link": "/watch"
+    },
+    {
+      "title": "Memories",
+      "icon": "memories",
+      "link": "/memories"
+    }
+  ],
+  "shortcuts": [
+    {
+      "title": "Developer Community",
+      "icon": "code",
+      "link": "/groups/developers"
+    },
+    {
+      "title": "Tech News",
+      "image": "/images/tech-news.png",
+      "link": "/pages/tech-news"
+    },
+    {
+      "title": "Local Events",
+      "icon": "events",
+      "link": "/events/local"
+    },
+    {
+      "title": "Gaming Group",
+      "image": "/images/gaming.png",
+      "link": "/groups/gaming"
+    }
+  ]
+}

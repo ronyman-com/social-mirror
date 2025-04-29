@@ -1,0 +1,211 @@
+<div class="post-creator card">
+    <div class="creator-header">
+        <% if (typeof user !== 'undefined' && user) { %>
+            <img src="<%= user.avatar || '/assets/images/default-avatar.jpg' %>" 
+                 alt="<%= user.name || 'User' %>" 
+                 class="creator-avatar"
+                 onerror="this.onerror=null;this.src='/assets/images/default-avatar.jpg'">
+            <input type="text" 
+                   placeholder="What's on your mind, <%= user.name ? user.name.split(' ')[0] : 'User' %>?" 
+                   class="post-input"
+                   id="post-content-input">
+        <% } else { %>
+            <div class="creator-avatar default-avatar">
+                <i class="fas fa-user-circle"></i>
+            </div>
+            <input type="text" 
+                   placeholder="What's on your mind?" 
+                   class="post-input"
+                   id="post-content-input"
+                   disabled>
+        <% } %>
+    </div>
+    
+    <div class="creator-divider"></div>
+    
+    <div class="creator-options">
+        <button class="creator-option" data-type="photo" onclick="handlePostOption('photo')">
+            <i class="fas fa-images"></i>
+            <span>Photo/Video</span>
+        </button>
+        <button class="creator-option" data-type="feeling" onclick="handlePostOption('feeling')">
+            <i class="fas fa-smile"></i>
+            <span>Feeling/Activity</span>
+        </button>
+        <button class="creator-option" data-type="live" onclick="handlePostOption('live')">
+            <i class="fas fa-video"></i>
+            <span>Live Video</span>
+        </button>
+    </div>
+    
+    <!-- Hidden file input for photo/video upload -->
+    <input type="file" 
+           id="media-upload" 
+           accept="image/*,video/*" 
+           style="display: none;" 
+           multiple>
+</div>
+
+<script>
+// Handle post creation options
+function handlePostOption(type) {
+    if (typeof user === 'undefined') {
+        showLoginPrompt();
+        return;
+    }
+
+    switch(type) {
+        case 'photo':
+            document.getElementById('media-upload').click();
+            break;
+        case 'feeling':
+            openFeelingSelector();
+            break;
+        case 'live':
+            initLiveVideo();
+            break;
+    }
+}
+
+// Handle file selection
+document.getElementById('media-upload').addEventListener('change', function(e) {
+    const files = e.target.files;
+    if (files.length > 0) {
+        openPostModalWithMedia(files);
+    }
+});
+
+function openPostModalWithMedia(files) {
+    // Create preview of selected media
+    const previewContainer = document.createElement('div');
+    previewContainer.className = 'media-preview';
+    
+    Array.from(files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const mediaElement = file.type.startsWith('image') ? 
+                `<img src="${e.target.result}" alt="Preview">` :
+                `<video controls src="${e.target.result}"></video>`;
+            previewContainer.innerHTML += mediaElement;
+        };
+        reader.readAsDataURL(file);
+    });
+    
+    // Open modal with preview
+    const modal = document.getElementById('post-modal');
+    modal.querySelector('.modal-body').prepend(previewContainer);
+    modal.style.display = 'block';
+}
+
+function showLoginPrompt() {
+    alert('Please log in to create posts');
+}
+</script>
+
+<style>
+.post-creator {
+    background: var(--card-bg);
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    margin-bottom: 16px;
+    padding: 12px 16px;
+}
+
+.creator-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 12px;
+}
+
+.creator-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.default-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    color: #65676b;
+}
+
+.post-input {
+    flex: 1;
+    background: var(--bg-color);
+    border: none;
+    border-radius: 20px;
+    padding: 8px 12px;
+    font-size: 15px;
+}
+
+.post-input:focus {
+    outline: none;
+    background: var(--card-bg);
+    box-shadow: 0 0 0 1px var(--primary-blue);
+}
+
+.creator-divider {
+    height: 1px;
+    background: var(--divider);
+    margin: 8px 0;
+}
+
+.creator-options {
+    display: flex;
+    justify-content: space-between;
+}
+
+.creator-option {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px;
+    border-radius: 4px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.creator-option:hover {
+    background: var(--hover-gray);
+}
+
+.creator-option i {
+    font-size: 20px;
+}
+
+.creator-option[data-type="photo"] i {
+    color: #45bd62;
+}
+
+.creator-option[data-type="feeling"] i {
+    color: #f7b928;
+}
+
+.creator-option[data-type="live"] i {
+    color: #f5535d;
+}
+
+.media-preview {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.media-preview img, 
+.media-preview video {
+    width: 100%;
+    border-radius: 4px;
+    max-height: 200px;
+    object-fit: cover;
+}
+</style>

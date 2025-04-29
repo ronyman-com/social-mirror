@@ -1,0 +1,42 @@
+<div class="post card" data-post-id="<%= post.id %>">
+    <div class="post-header">
+      <img src="<%= post.user.avatar %>" alt="User" class="post-avatar">
+      <div class="post-user-info">
+        <h4><%= post.user.name %></h4>
+        <div class="post-meta">
+          <span class="post-time"><%= post.time %></span>
+          <i class="fas fa-globe-americas"></i>
+        </div>
+      </div>
+    </div>
+    
+    <div class="post-content">
+      <p><%= post.content %></p>
+      <% if (post.image) { %>
+        <img src="<%= post.image %>" alt="Post image" class="post-image">
+      <% } %>
+    </div>
+    
+    <div class="post-stats">
+      <div class="post-likes">
+        <i class="fas fa-thumbs-up"></i>
+        <span><%= post.likes %></span>
+      </div>
+      <div class="post-comments-shares">
+        <span><%= post.comments %> comments</span>
+        <span><%= post.shares %> shares</span>
+      </div>
+    </div>
+    
+    <div class="post-actions">
+      <button class="post-action like-btn" data-post-id="<%= post.id %>">
+        <i class="far fa-thumbs-up"></i> Like
+      </button>
+      <button class="post-action comment-btn">
+        <i class="far fa-comment"></i> Comment
+      </button>
+      <button class="post-action share-btn">
+        <i class="fas fa-share"></i> Share
+      </button>
+    </div>
+  </div>

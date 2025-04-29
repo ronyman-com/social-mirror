@@ -1,0 +1,42 @@
+<%- include('../partials/header', { title: 'Sign Up' }) %>
+
+<div class="auth-container">
+  <div class="auth-box">
+    <% if (locals.messages && locals.messages.length) { %>
+      <div class="alert alert-danger">
+        <%= messages[0] %>
+      </div>
+    <% } %>
+
+    <div class="auth-header">
+      <img src="/assets/images/default-logo.png" alt="Logo">
+      <h2>Create New Account</h2>
+    </div>
+
+    <div class="auth-options">
+      <a href="/auth/facebook/signup" class="btn btn-facebook">
+        <i class="fab fa-facebook"></i> Sign Up with Facebook
+      </a>
+      
+      <div class="divider">or</div>
+
+      <form action="/signup" method="POST">
+        <div class="form-group">
+          <input type="text" name="firstName" placeholder="First Name" required>
+          <input type="text" name="lastName" placeholder="Last Name" required>
+        </div>
+        
+        <input type="email" name="email" placeholder="Email" required>
+        <input type="password" name="password" placeholder="New Password" required>
+        
+        <button type="submit" class="btn btn-primary">Sign Up</button>
+      </form>
+    </div>
+
+    <div class="auth-footer">
+      Already have an account? <a href="/login">Log In</a>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('base/head') %>
+    <title>Facebook</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <script src="https://kit.fontawesome.com/af67804f51.js" crossorigin="anonymous"></script>
+    <style>
+        :root {
+            --navbar-height: 56px;
+            --left-sidebar-width: 360px;
+            --right-sidebar-width: 360px;
+            --main-content-width: 680px;
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Main Layout Structure */
+        .main-container {
+            display: flex;
+            justify-content: center;
+            padding-top: var(--navbar-height);
+            flex: 1;
+        }
+
+        /* Left Sidebar - Fixed with independent scrolling */
+        .left-sidebar-container {
+            width: var(--left-sidebar-width);
+            height: calc(100vh - var(--navbar-height));
+            position: fixed;
+            left: 0;
+            overflow-y: auto;
+            padding: 20px 0 20px 20px;
+            background-color: var(--bg-color);
+            z-index: 800;
+        }
+
+        /* Main Content - Centered with independent scrolling */
+        .main-content-area {
+            width: 100%;
+            max-width: var(--main-content-width);
+            margin: 0 auto;
+            padding: 20px 16px;
+            margin-left: var(--left-sidebar-width);
+            min-height: calc(100vh - var(--navbar-height));
+            overflow-y: auto;
+        }
+
+        /* Right Sidebar - Fixed with independent scrolling */
+        .right-sidebar-container {
+            width: var(--right-sidebar-width);
+            height: calc(100vh - var(--navbar-height));
+            position: fixed;
+            right: 0;
+            overflow-y: auto;
+            padding: 20px 20px 20px 0;
+            background-color: var(--bg-color);
+            z-index: 800;
+        }
+
+        /* Custom scrollbars */
+        .left-sidebar-container::-webkit-scrollbar,
+        .right-sidebar-container::-webkit-scrollbar,
+        .main-content-area::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .left-sidebar-container::-webkit-scrollbar-thumb,
+        .right-sidebar-container::-webkit-scrollbar-thumb,
+        .main-content-area::-webkit-scrollbar-thumb {
+            background-color: #ccd0d5;
+            border-radius: 8px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1260px) {
+            .right-sidebar-container {
+                display: none;
+            }
+            .main-content-area {
+                margin-right: 16px;
+            }
+        }
+
+        @media (max-width: 1100px) {
+            .left-sidebar-container {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                background: var(--card-bg);
+            }
+            
+            .left-sidebar-container.active {
+                transform: translateX(0);
+            }
+            
+            .main-content-area {
+                margin-left: 0;
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+        }
+
+        @media (max-width: 680px) {
+            .main-content-area {
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <%- include('base/nav') %>
+
+    <div class="main-container">
+        <!-- Left Sidebar -->
+        <div class="left-sidebar-container">
+            <%- include('base/left-sidebar') %>
+            <%- include('base/your-shortcut') %>
+        </div>
+
+        <!-- Main Content Area -->
+        <main class="main-content-area">
+            <%- include('base/main') %>
+            
+            
+
+            <!-- Create Post -->
+            <%- include('base/post-creator') %>
+
+            <!-- Stories Section -->
+            <section class="stories-section">
+              <div class="story">
+                  <!-- Your Story -->
+                  <div class="story-bg">
+                      <% if (typeof user !== 'undefined' && user && user.avatar) { %>
+                          <img src="<%= user.avatar %>" alt="Your Story">
+                      <% } else { %>
+                          <i class="fas fa-user-circle"></i>
+                      <% } %>
+                  </div>
+                  <div class="create-story-content">
+                      <i class="fas fa-plus-circle"></i>
+                      <div>Create Story</div>
+                  </div>
+              </div>
+              
+              <!-- Friends' Stories -->
+              <% if (typeof stories !== 'undefined' && stories.length > 0) { %>
+                  <% stories.forEach(story => { %>
+                      <%- include('base/story', {story}) %>
+                  <% }); %>
+              <% } %>
+          </section>
+
+            <!-- Posts Feed -->
+            <div class="posts-feed">
+                <% if (typeof posts !== 'undefined' && posts.length > 0) { %>
+                    <% posts.forEach(post => { %>
+                        <%- include('base/post', {post}) %>
+                    <% }); %>
+                <% } else { %>
+                    <div class="no-posts">
+                        <i class="fas fa-newspaper"></i>
+                        <p>No posts to display</p>
+                    </div>
+                <% } %>
+            </div>
+        </main>
+
+        <!-- Right Sidebar -->
+        <div class="right-sidebar-container">
+            <!-- Sponsored Content -->
+            <%- include('base/sponsored') %>
+
+            <!-- Birthday Reminders -->
+            <%- include('base/birthdays') %>
+
+            <!-- Contacts List -->
+            <%- include('base/contact') %>
+
+            <!-- Suggested Friends -->
+            <%- include('base/suggested') %>
+
+            <!-- Marketplace Preview -->
+            <%- include('base/marketplace') %>
+
+            <!-- Ad Center -->
+            <%- include('base/ad-center') %>
+
+            <!-- Ad Manager -->
+            <%- include('base/ad-manager') %>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/assets/js/main.js"></script>
+    <script>
+        // Toggle user menu
+        document.getElementById('userMenuButton').addEventListener('click', function(e) {
+            e.stopPropagation();
+            const menu = document.getElementById('userMenu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        });
+
+        // Close menu when clicking elsewhere
+        document.addEventListener('click', function() {
+            document.getElementById('userMenu').style.display = 'none';
+        });
+
+        // Mobile menu toggle
+        document.querySelector('.mobile-menu-toggle').addEventListener('click', function() {
+            document.querySelector('.left-sidebar-container').classList.toggle('active');
+        });
+    </script>
+</body>
+</html>

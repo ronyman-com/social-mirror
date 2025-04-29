@@ -1,0 +1,217 @@
+<!-- C:\Users\USER\OneDrive\OpenSource\AweSome-ReadME\facebook-mirror\templates\default\base\pages\create.ejs -->
+<div class="create-page-container">
+    <div class="create-page-header">
+        <h2>Create a Page</h2>
+        <p>Connect with your customers or fans with a Facebook Page</p>
+    </div>
+
+    <div class="create-page-steps">
+        <div class="step active">
+            <div class="step-number">1</div>
+            <div class="step-info">
+                <h4>Page Info</h4>
+                <p>Basic information about your Page</p>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-number">2</div>
+            <div class="step-info">
+                <h4>Details</h4>
+                <p>Add more details about your Page</p>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-number">3</div>
+            <div class="step-info">
+                <h4>Finish</h4>
+                <p>Complete your Page setup</p>
+            </div>
+        </div>
+    </div>
+
+    <form class="create-page-form">
+        <div class="form-group">
+            <label for="pageName">Page Name</label>
+            <input type="text" id="pageName" placeholder="E.g. My Business">
+        </div>
+
+        <div class="form-group">
+            <label for="pageCategory">Category</label>
+            <select id="pageCategory">
+                <option value="">Select a category</option>
+                <option value="business">Business or Brand</option>
+                <option value="community">Community or Public Figure</option>
+                <option value="entertainment">Entertainment</option>
+                <option value="shopping">Shopping & Retail</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="pageDescription">Description</label>
+            <textarea id="pageDescription" placeholder="Tell people what your Page is about"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Page Photo</label>
+            <div class="upload-area" id="uploadArea">
+                <i class="fas fa-camera"></i>
+                <p>Add Profile Picture</p>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="button" class="cancel-btn">Cancel</button>
+            <button type="submit" class="continue-btn">Continue</button>
+        </div>
+    </form>
+</div>
+
+<style>
+    .create-page-container {
+        background: #fff;
+        border-radius: 8px;
+        padding: 24px;
+        max-width: 800px;
+        margin: 0 auto;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .create-page-header h2 {
+        margin: 0 0 8px;
+        font-size: 24px;
+    }
+
+    .create-page-header p {
+        margin: 0;
+        color: #65676b;
+    }
+
+    .create-page-steps {
+        display: flex;
+        justify-content: space-between;
+        margin: 24px 0;
+        position: relative;
+    }
+
+    .create-page-steps::before {
+        content: '';
+        position: absolute;
+        top: 20px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: #e4e6eb;
+        z-index: 1;
+    }
+
+    .step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        z-index: 2;
+    }
+
+    .step.active .step-number {
+        background: #1877f2;
+        color: white;
+    }
+
+    .step-number {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #e4e6eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .step-info {
+        text-align: center;
+    }
+
+    .step-info h4 {
+        margin: 0 0 4px;
+        font-size: 16px;
+    }
+
+    .step-info p {
+        margin: 0;
+        font-size: 13px;
+        color: #65676b;
+    }
+
+    .create-page-form {
+        margin-top: 24px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 12px;
+        border-radius: 6px;
+        border: 1px solid #ddd;
+        font-size: 15px;
+    }
+
+    .form-group textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .upload-area {
+        border: 2px dashed #ddd;
+        border-radius: 8px;
+        padding: 40px;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    .upload-area i {
+        font-size: 48px;
+        color: #65676b;
+        margin-bottom: 16px;
+    }
+
+    .upload-area p {
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .upload-area:hover {
+        border-color: #1877f2;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 24px;
+    }
+
+    .cancel-btn {
+        background: #e4e6eb;
+        color: #050505;
+        border: none;
+        border-radius: 6px;
+        padding: 10px 20px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .continue-btn {
+        background: #1877

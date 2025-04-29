@@ -1,0 +1,28 @@
+<div class="profile-card">
+    <% if (user) { %>
+        <div class="profile-header">
+            <img class="cover-photo" src="<%= user.coverPhoto || '/assets/images/default-cover.jpg' %>" alt="Cover photo">
+            <div class="profile-info">
+                <img class="profile-avatar" src="<%= user.avatar %>" alt="Profile picture">
+                <h2><%= user.name %></h2>
+                <p><%= user.bio || 'No bio yet' %></p>
+            </div>
+        </div>
+        
+        <div class="profile-stats">
+            <div class="stat">
+                <span class="count"><%= user.friends || 0 %></span>
+                <span>Friends</span>
+            </div>
+            <div class="stat">
+                <span class="count"><%= user.posts || 0 %></span>
+                <span>Posts</span>
+            </div>
+        </div>
+    <% } else { %>
+        <div class="profile-guest">
+            <p>Please log in to view profiles</p>
+            <a href="/auth/facebook" class="login-btn">Login with Facebook</a>
+        </div>
+    <% } %>
+</div>

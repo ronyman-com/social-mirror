@@ -1,0 +1,92 @@
+<div class="birthdays-section card">
+    <div class="section-header">
+      <h3><i class="fas fa-birthday-cake"></i> Birthdays</h3>
+    </div>
+    
+    <% if (typeof birthdays !== 'undefined' && Array.isArray(birthdays) && birthdays.length > 0) { %>
+      <div class="birthday-item">
+        <i class="fas fa-gift"></i>
+        <div class="birthday-text">
+          <% birthdays.slice(0, 3).forEach((birthday, index) => { %>
+            <strong><%= birthday.name %></strong><%= index < Math.min(birthdays.length, 3) - 1 ? ', ' : '' %>
+          <% }); %>
+          <% if (birthdays.length > 3) { %>
+            and <strong><%= birthdays.length - 3 %>+ others</strong>
+          <% } %>
+          have birthdays today.
+        </div>
+      </div>
+    <% } else { %>
+      <div class="no-birthdays">
+        <i class="fas fa-birthday-cake"></i>
+        <p>No birthdays today</p>
+      </div>
+    <% } %>
+    
+    <button class="view-all" onclick="viewAllBirthdays()">
+      <i class="fas fa-chevron-down"></i> View All
+    </button>
+  </div>
+  
+  <style>
+  .birthdays-section {
+    padding: 12px;
+    margin-bottom: 16px;
+  }
+  
+  .section-header {
+    margin-bottom: 12px;
+  }
+  
+  .birthday-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+  }
+  
+  .birthday-item i {
+    color: #ff7e00;
+    font-size: 24px;
+  }
+  
+  .birthday-text {
+    font-size: 14px;
+  }
+  
+  .no-birthdays {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px;
+    color: var(--text-secondary);
+  }
+  
+  .no-birthdays i {
+    font-size: 24px;
+    margin-bottom: 8px;
+    color: #ff7e00;
+  }
+  
+  .view-all {
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 8px;
+    color: var(--primary-blue);
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .view-all:hover {
+    background: var(--hover-gray);
+  }
+  </style>
+  
+  <script>
+  function viewAllBirthdays() {
+    // Implement view all birthdays functionality
+    console.log('Viewing all birthdays');
+  }
+  </script>
