@@ -1,233 +1,352 @@
 <!-- C:\Users\USER\OneDrive\OpenSource\AweSome-ReadME\facebook-mirror\templates\default\base\post-modal.ejs -->
-<div class="post-modal-overlay" id="postModal">
-    <div class="post-modal-container">
-        <div class="post-modal-header">
-            <h3>Create Post</h3>
-            <button class="close-modal-btn" id="closePostModal">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        
-        <div class="post-modal-creator">
-            <div class="creator-avatar-container">
-                <% if (typeof user !== 'undefined' && user && user.avatar) { %>
-                    <img src="<%= user.avatar %>" alt="User" class="creator-avatar">
-                <% } else { %>
-                    <div class="default-avatar">
-                        <i class="fas fa-user-circle"></i>
-                    </div>
-                <% } %>
-            </div>
-            <div class="creator-info">
-                <span class="creator-name">
-                    <%= typeof user !== 'undefined' && user ? user.name : 'User' %>
-                </span>
-                <div class="privacy-selector">
-                    <button class="privacy-btn">
-                        <i class="fas fa-globe-europe"></i>
-                        <span>Public</span>
-                        <i class="fas fa-caret-down"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <div class="post-modal-content">
-            <textarea placeholder="What's on your mind?" class="post-input" id="postContent"></textarea>
-            <div class="post-preview" id="postPreview"></div>
-        </div>
-
-        <div class="post-modal-options">
-            <div class="options-title">Add to your post</div>
-            <div class="options-buttons">
-                <button class="option-btn" title="Photo/Video">
-                    <i class="fas fa-images"></i>
-                </button>
-                <button class="option-btn" title="Tag people">
-                    <i class="fas fa-user-tag"></i>
-                </button>
-                <button class="option-btn" title="Feeling/Activity">
-                    <i class="fas fa-smile"></i>
-                </button>
-                <button class="option-btn" title="Check in">
-                    <i class="fas fa-map-marker-alt"></i>
-                </button>
-                <button class="option-btn" title="GIF">
-                    <i class="fas fa-photo-video"></i>
-                </button>
-            </div>
-        </div>
-
-        <button class="post-submit-btn" id="submitPost" disabled>Post</button>
-    </div>
-</div>
-  
-  <style>
-  .modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
-    z-index: 2000;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .modal-content {
-    background: var(--card-bg);
-    border-radius: 8px;
-    width: 500px;
-    max-width: 90%;
-    max-height: 90vh;
-    overflow-y: auto;
-  }
-  
-  .modal-header {
-    padding: 16px;
-    border-bottom: 1px solid var(--divider);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .close-modal {
-    background: none;
-    border: none;
-    font-size: 20px;
-    cursor: pointer;
-  }
-  
-  .modal-body {
-    padding: 16px;
-  }
-  
-  .post-creator {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 16px;
-  }
-  
-  .creator-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-  }
-  
-  .creator-info {
-    flex: 1;
-  }
-  
-  .privacy-selector {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 13px;
-    color: var(--primary-blue);
-    background: var(--hover-gray);
-    padding: 4px 8px;
-    border-radius: 4px;
-    width: fit-content;
-    cursor: pointer;
-  }
-  
-  textarea {
-    width: 100%;
-    border: none;
-    resize: none;
-    min-height: 100px;
-    font-size: 16px;
-    margin-bottom: 16px;
-  }
-  
-  .media-preview {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-    margin-bottom: 16px;
-  }
-  
-  .media-preview img {
-    width: 100%;
-    border-radius: 8px;
-    max-height: 200px;
-    object-fit: cover;
-  }
-  
-  .post-options {
-    display: flex;
-    justify-content: space-between;
-    border: 1px solid var(--divider);
-    border-radius: 8px;
-    padding: 8px;
-  }
-  
-  .post-option {
-    background: none;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .post-option:hover {
-    background: var(--hover-gray);
-  }
-  
-  .modal-footer {
-    padding: 16px;
-    border-top: 1px solid var(--divider);
-    text-align: right;
-  }
-  
-  .post-button {
-    background: var(--primary-blue);
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 8px 16px;
-    font-weight: bold;
-    cursor: pointer;
-  }
-  </style>
-  
-  <script>
-  function closeModal() {
-    document.getElementById('post-modal').style.display = 'none';
-  }
-  
-  function openMediaPicker() {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*,video/*';
-    input.multiple = true;
-    input.click();
-    
-    input.onchange = function(e) {
-      const files = e.target.files;
-      const preview = document.getElementById('media-preview');
-      preview.innerHTML = '';
+<div class="post-modal-overlay" id="postModal" style="display: none;">
+  <div class="post-modal-container">
+      <div class="post-modal-header">
+          <h3>Create Post</h3>
+          <button class="close-modal-btn" id="closePostModal">
+              <i class="fas fa-times"></i>
+          </button>
+      </div>
       
-      Array.from(files).forEach(file => {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const mediaElement = document.createElement(file.type.startsWith('image') ? 'img' : 'video');
-          mediaElement.src = e.target.result;
-          if (file.type.startsWith('video')) {
-            mediaElement.controls = true;
-          }
-          preview.appendChild(mediaElement);
-        };
-        reader.readAsDataURL(file);
-      });
-    };
+      <div class="post-modal-creator">
+          <div class="creator-avatar-container">
+              <% if (typeof user !== 'undefined' && user && user.avatar) { %>
+                  <img src="<%= user.avatar %>" alt="User" class="creator-avatar">
+              <% } else { %>
+                  <div class="default-avatar">
+                      <i class="fas fa-user-circle"></i>
+                  </div>
+              <% } %>
+          </div>
+          <div class="creator-info">
+              <span class="creator-name">
+                  <%= typeof user !== 'undefined' && user ? user.name : 'User' %>
+              </span>
+              <div class="privacy-selector">
+                  <button class="privacy-btn">
+                      <i class="fas fa-globe-europe"></i>
+                      <span>Public</span>
+                      <i class="fas fa-caret-down"></i>
+                  </button>
+              </div>
+          </div>
+      </div>
+
+      <div class="post-modal-content">
+          <textarea placeholder="What's on your mind?" class="post-input" id="postContent"></textarea>
+          <div class="post-preview" id="postPreview"></div>
+      </div>
+
+      <div class="post-modal-options">
+          <div class="options-title">Add to your post</div>
+          <div class="options-buttons">
+              <button class="option-btn" id="mediaUploadBtn" title="Photo/Video">
+                  <i class="fas fa-images"></i>
+              </button>
+              <button class="option-btn" title="Tag people">
+                  <i class="fas fa-user-tag"></i>
+              </button>
+              <button class="option-btn" title="Feeling/Activity">
+                  <i class="fas fa-smile"></i>
+              </button>
+              <button class="option-btn" title="Check in">
+                  <i class="fas fa-map-marker-alt"></i>
+              </button>
+              <button class="option-btn" title="GIF">
+                  <i class="fas fa-photo-video"></i>
+              </button>
+          </div>
+      </div>
+
+      <button class="post-submit-btn" id="submitPost" disabled>Post</button>
+  </div>
+</div>
+
+<input type="file" id="mediaUpload" accept="image/*,video/*" style="display: none;" multiple>
+
+<style>
+.post-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.post-modal-container {
+  background: white;
+  border-radius: 8px;
+  width: 500px;
+  max-width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.post-modal-header {
+  padding: 16px;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.post-modal-header h3 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.close-modal-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #65676b;
+}
+
+.post-modal-creator {
+  display: flex;
+  padding: 12px 16px;
+  align-items: center;
+}
+
+.creator-avatar-container {
+  margin-right: 12px;
+}
+
+.creator-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.default-avatar i {
+  font-size: 40px;
+  color: #65676b;
+}
+
+.creator-name {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.privacy-btn {
+  background: #e4e6eb;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.privacy-btn i {
+  margin-right: 4px;
+}
+
+.post-modal-content {
+  padding: 0 16px;
+}
+
+.post-input {
+  width: 100%;
+  border: none;
+  resize: none;
+  min-height: 100px;
+  font-size: 16px;
+  padding: 8px 0;
+}
+
+.post-input:focus {
+  outline: none;
+}
+
+.post-preview {
+  margin: 16px 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.post-preview img, .post-preview video {
+  width: 100%;
+  border-radius: 8px;
+  max-height: 200px;
+  object-fit: cover;
+}
+
+.post-modal-options {
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  padding: 12px 16px;
+}
+
+.options-title {
+  font-size: 15px;
+  color: #65676b;
+  margin-bottom: 8px;
+}
+
+.options-buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+.option-btn {
+  background: none;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  color: #45bd62;
+  font-size: 20px;
+}
+
+.option-btn:hover {
+  background: #f0f2f5;
+}
+
+.post-submit-btn {
+  width: calc(100% - 32px);
+  margin: 16px;
+  padding: 8px;
+  background: #1877f2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.post-submit-btn:disabled {
+  background: #e4e6eb;
+  cursor: not-allowed;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Modal elements
+  const postModal = document.getElementById('postModal');
+  const closeModalBtn = document.getElementById('closePostModal');
+  const postContent = document.getElementById('postContent');
+  const submitPostBtn = document.getElementById('submitPost');
+  const mediaUploadBtn = document.getElementById('mediaUploadBtn');
+  const mediaUpload = document.getElementById('mediaUpload');
+  const postPreview = document.getElementById('postPreview');
+
+  // Open modal function (call this from your main page)
+  window.openPostModal = function() {
+      postModal.style.display = 'flex';
+      postContent.focus();
+  };
+
+  // Close modal function
+  function closeModal() {
+      postModal.style.display = 'none';
+      postContent.value = '';
+      postPreview.innerHTML = '';
+      submitPostBtn.disabled = true;
   }
+
+  // Event listeners
+  closeModalBtn.addEventListener('click', closeModal);
   
-  function createPost() {
-    // Implement post creation
-    console.log('Creating post');
-    closeModal();
+  // Close when clicking outside modal
+  postModal.addEventListener('click', function(e) {
+      if (e.target === postModal) {
+          closeModal();
+      }
+  });
+
+  // Media upload handling
+  mediaUploadBtn.addEventListener('click', function() {
+      mediaUpload.click();
+  });
+
+  mediaUpload.addEventListener('change', function(e) {
+      const files = e.target.files;
+      if (files.length > 0) {
+          postPreview.innerHTML = '';
+          Array.from(files).forEach(file => {
+              const reader = new FileReader();
+              reader.onload = function(e) {
+                  const mediaElement = document.createElement(file.type.startsWith('image') ? 'img' : 'video');
+                  mediaElement.src = e.target.result;
+                  if (file.type.startsWith('video')) {
+                      mediaElement.controls = true;
+                  }
+                  postPreview.appendChild(mediaElement);
+              };
+              reader.readAsDataURL(file);
+          });
+          checkPostValidity();
+      }
+  });
+
+  // Text content change handler
+  postContent.addEventListener('input', checkPostValidity);
+
+  // Check if post has content to enable submit button
+  function checkPostValidity() {
+      const hasText = postContent.value.trim().length > 0;
+      const hasMedia = postPreview.innerHTML.trim().length > 0;
+      submitPostBtn.disabled = !(hasText || hasMedia);
   }
-  </script>
+
+  // Submit post
+  submitPostBtn.addEventListener('click', async function() {
+      if (submitPostBtn.disabled) return;
+      
+      submitPostBtn.disabled = true;
+      submitPostBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Posting...';
+      
+      try {
+          const formData = new FormData();
+          formData.append('content', postContent.value);
+          
+          // Get CSRF token from meta tag
+          const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+          if (csrfToken) {
+              formData.append('_csrf', csrfToken);
+          }
+          
+          // Add media files if any
+          const files = mediaUpload.files;
+          if (files.length > 0) {
+              Array.from(files).forEach((file, index) => {
+                  formData.append(`media_${index}`, file);
+              });
+          }
+          
+          const response = await fetch('/api/posts', {
+              method: 'POST',
+              body: formData
+          });
+          
+          if (!response.ok) {
+              throw new Error('Failed to create post');
+          }
+          
+          // Success - close modal and refresh or update UI
+          closeModal();
+          window.location.reload(); // Or update the posts list dynamically
+          
+      } catch (error) {
+          console.error('Error creating post:', error);
+          alert('Failed to create post. Please try again.');
+          submitPostBtn.disabled = false;
+          submitPostBtn.textContent = 'Post';
+      }
+  });
+});
+</script>

@@ -1,7 +1,8 @@
+<!-- post-creator.ejs -->
 <div class="post-creator-container">
     <% if (typeof user === 'undefined' || !user) { %>
         <div class="login-prompt">
-            <button id="postCreatorFbLoginBtn" class="fb-login-button">
+            <button id="postCreatorFbLoginBtn" class="auth-btn facebook-auth">
                 <i class="fab fa-facebook"></i> Continue with Facebook to post
             </button>
         </div>
@@ -46,6 +47,7 @@
                     <span class="close-modal">&times;</span>
                 </div>
                 <div class="modal-body">
+                    <div id="postError" class="post-error-message" style="display: none;"></div>
                     <div class="media-preview" id="mediaPreview"></div>
                     <textarea id="postText" placeholder="What's on your mind?"></textarea>
                     <div class="privacy-selector">
@@ -64,213 +66,77 @@
     <% } %>
 </div>
 
-<script>
-    // Initialize Firebase
-    const firebaseConfig = {
-        apiKey: "<%= process.env.FIREBASE_API_KEY %>",
-        authDomain: "<%= process.env.FIREBASE_AUTH_DOMAIN %>",
-        projectId: "<%= process.env.FIREBASE_PROJECT_ID %>",
-        storageBucket: "<%= process.env.FIREBASE_STORAGE_BUCKET %>",
-        messagingSenderId: "<%= process.env.FIREBASE_MESSAGING_SENDER_ID %>",
-        appId: "<%= process.env.FIREBASE_APP_ID %>"
-    };
 
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
-
-    // Facebook Login for Post Creator
-    document.getElementById('postCreatorFbLoginBtn')?.addEventListener('click', loginWithFacebook);
-
-    function loginWithFacebook() {
-    const provider = new firebase.auth.FacebookAuthProvider();
-    provider.addScope('public_profile');
-    provider.addScope('email');
-
-    firebase.auth()
-  .signInWithPopup(provider)
-  .then((result) => {
-    const user = result.user;
-    const credential = result.credential;
-    
-    // First get CSRF token from meta tag
-    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-    
-    return fetch('/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': csrfToken
-      },
-      body: JSON.stringify({
-        accessToken: credential.accessToken,
-        userId: user.uid,
-        email: user.email,
-        displayName: user.displayName,
-        photoURL: user.photoURL
-      })
-    });
-  })
-  .then(response => {
-    if (response.ok) {
-      window.location.reload();
-    } else {
-      throw new Error('Authentication failed');
-    }
-  })
-  .catch((error) => {
-    console.error('Login error:', error);
-    alert('Facebook login failed: ' + error.message);
-  });
-
-    // Post Creator Functionality
-    document.querySelectorAll('.creator-option').forEach(button => {
-        button.addEventListener('click', function() {
-            const type = this.getAttribute('data-type');
-            handlePostOption(type);
-        });
-    });
-
-    function handlePostOption(type) {
-        switch(type) {
-            case 'photo':
-                document.getElementById('mediaUpload').click();
-                break;
-            case 'feeling':
-                openFeelingSelector();
-                break;
-            case 'live':
-                initLiveVideo();
-                break;
-        }
-    }
-
-    document.getElementById('mediaUpload').addEventListener('change', function(e) {
-        const files = e.target.files;
-        if (files.length > 0) {
-            openPostModalWithMedia(files);
-        }
-    });
-
-    function openPostModalWithMedia(files) {
-        const previewContainer = document.getElementById('mediaPreview');
-        previewContainer.innerHTML = '';
-        
-        Array.from(files).forEach(file => {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const mediaElement = file.type.startsWith('image') ? 
-                    `<img src="${e.target.result}" alt="Preview">` :
-                    `<video controls src="${e.target.result}"></video>`;
-                previewContainer.innerHTML += mediaElement;
-            };
-            reader.readAsDataURL(file);
-        });
-        
-        const modal = document.getElementById('postModal');
-        modal.style.display = 'block';
-    }
-
-    // Modal close functionality
-    document.querySelector('.close-modal')?.addEventListener('click', function() {
-        document.getElementById('postModal').style.display = 'none';
-    });
-
-    // Post submission
-document.getElementById('submitPostBtn')?.addEventListener('click', async function(e) {
-    e.preventDefault(); // Prevent default form submission
-    
-    try {
-        // Get CSRF token from meta tag (recommended approach)
-        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
-        if (!csrfToken) {
-            throw new Error('CSRF token not found');
-        }
-
-        // Get form values
-        const postText = document.getElementById('postText').value;
-        const privacy = document.getElementById('postPrivacy').value;
-        const files = document.getElementById('mediaUpload').files;
-        
-        // Validate required fields
-        if (!postText.trim() && files.length === 0) {
-            throw new Error('Please add some text or media to your post');
-        }
-
-        // Prepare form data
-        const formData = new FormData();
-        formData.append('content', postText);
-        formData.append('privacy', privacy);
-        formData.append('_csrf', csrfToken); // Alternative CSRF method
-        
-        // Add media files if any
-        if (files.length > 0) {
-            Array.from(files).forEach((file, index) => {
-                formData.append(`media_${index}`, file);
-            });
-        }
-
-        // Show loading state
-        const submitBtn = document.getElementById('submitPostBtn');
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Posting...';
-
-        // Submit the post
-        const response = await fetch('/api/posts', {
-            method: 'POST',
-            headers: {
-                'X-CSRF-Token': csrfToken // Using header approach
-            },
-            body: formData
-        });
-
-        // Handle response
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'Post submission failed');
-        }
-
-        // Success - reload or redirect
-        window.location.reload();
-        
-    } catch (error) {
-        console.error('Post creation error:', error);
-        
-        // Show error to user
-        const errorElement = document.getElementById('postError') || createErrorElement();
-        errorElement.textContent = error.message;
-        errorElement.style.display = 'block';
-        
-        // Reset button state
-        const submitBtn = document.getElementById('submitPostBtn');
-        if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = 'Post';
-        }
-    }
-});
-
-// Helper function to create error display element
-function createErrorElement() {
-    const errorDiv = document.createElement('div');
-    errorDiv.id = 'postError';
-    errorDiv.className = 'post-error-message';
-    errorDiv.style.display = 'none';
-    document.querySelector('.modal-body').prepend(errorDiv);
-    return errorDiv;
-}
-</script>
 
 <style>
-    /* Your existing styles plus: */
+    /* Post Creator Styles */
     .post-creator-container {
         margin-bottom: 20px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        padding: 12px 16px;
     }
     
+    .creator-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+    
+    .creator-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 12px;
+    }
+    
+    .post-input {
+        flex: 1;
+        background: #f0f2f5;
+        border: none;
+        border-radius: 20px;
+        padding: 10px 16px;
+        font-size: 15px;
+        outline: none;
+    }
+    
+    .creator-divider {
+        height: 1px;
+        background: #ddd;
+        margin: 8px 0;
+    }
+    
+    .creator-options {
+        display: flex;
+        justify-content: space-between;
+        padding: 4px 0;
+    }
+    
+    .creator-option {
+        flex: 1;
+        background: none;
+        border: none;
+        padding: 8px;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #65676b;
+        font-weight: 600;
+    }
+    
+    .creator-option:hover {
+        background: #f0f2f5;
+    }
+    
+    /* Modal Styles */
     .modal {
         display: none;
         position: fixed;
-        z-index: 1000;
+        z-index: 2000;
         left: 0;
         top: 0;
         width: 100%;
@@ -281,40 +147,52 @@ function createErrorElement() {
     .modal-content {
         background: white;
         margin: 10% auto;
-        padding: 20px;
+        padding: 16px;
         border-radius: 8px;
         width: 500px;
         max-width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
     }
     
     .modal-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 15px;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #ddd;
     }
     
     .close-modal {
         font-size: 24px;
         cursor: pointer;
+        color: #65676b;
+    }
+    
+    .media-preview {
+        margin-bottom: 16px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .preview-media {
+        max-width: 100%;
+        max-height: 300px;
+        border-radius: 8px;
     }
     
     textarea#postText {
         width: 100%;
         min-height: 100px;
-        padding: 10px;
+        padding: 12px;
         border-radius: 8px;
         border: 1px solid #ddd;
         resize: vertical;
-        margin-bottom: 15px;
-    }
-    
-    .privacy-selector {
-        margin-bottom: 15px;
-    }
-    
-    .modal-footer {
-        text-align: right;
+        margin-bottom: 16px;
+        font-family: inherit;
+        font-size: 15px;
     }
     
     .btn-primary {
@@ -323,6 +201,114 @@ function createErrorElement() {
         border: none;
         padding: 8px 16px;
         border-radius: 6px;
+        font-weight: 600;
         cursor: pointer;
     }
+    
+   
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Post Creator Functionality
+        const postContentInput = document.getElementById('postContentInput');
+        const postModal = document.getElementById('postModal');
+        const closeModalBtn = document.querySelector('.close-modal');
+        const mediaUpload = document.getElementById('mediaUpload');
+        const submitPostBtn = document.getElementById('submitPostBtn');
+        
+        // Open modal when clicking on post input
+        postContentInput?.addEventListener('click', function() {
+            postModal.style.display = 'block';
+            document.getElementById('postText').focus();
+        });
+        
+        // Close modal
+        closeModalBtn?.addEventListener('click', function() {
+            postModal.style.display = 'none';
+        });
+        
+        // Media upload handling
+        document.querySelectorAll('.creator-option')?.forEach(button => {
+            button.addEventListener('click', function() {
+                const type = this.getAttribute('data-type');
+                if (type === 'photo') {
+                    mediaUpload.click();
+                }
+            });
+        });
+        
+        // Post submission
+        submitPostBtn?.addEventListener('click', async function() {
+            const postText = document.getElementById('postText').value;
+            const files = mediaUpload.files;
+            
+            if (!postText.trim() && files.length === 0) {
+                alert('Please add some text or media to your post');
+                return;
+            }
+            
+            submitPostBtn.disabled = true;
+            submitPostBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Posting...';
+            
+            try {
+                const formData = new FormData();
+                formData.append('content', postText);
+                formData.append('privacy', document.getElementById('postPrivacy').value);
+                
+                // Add CSRF token if available
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+                if (csrfToken) {
+                    formData.append('_csrf', csrfToken);
+                }
+                
+                // Add media files
+                if (files.length > 0) {
+                    Array.from(files).forEach((file, index) => {
+                        formData.append(`media_${index}`, file);
+                    });
+                }
+                
+                const response = await fetch('/api/posts', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to create post');
+                }
+                
+                window.location.reload();
+            } catch (error) {
+                console.error('Error creating post:', error);
+                alert('Failed to create post. Please try again.');
+                submitPostBtn.disabled = false;
+                submitPostBtn.textContent = 'Post';
+            }
+        });
+        
+        // Like button functionality
+        document.querySelectorAll('.like-btn').forEach(button => {
+            button.addEventListener('click', async function() {
+                const postId = this.getAttribute('data-post-id');
+                try {
+                    const response = await fetch(`/api/posts/${postId}/like`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const result = await response.json();
+                        const likeCount = this.closest('.post-card').querySelector('.post-likes');
+                        likeCount.innerHTML = `<i class="fas fa-thumbs-up"></i> ${result.likes}`;
+                        this.innerHTML = `<i class="fas fa-thumbs-up"></i> Liked`;
+                    }
+                } catch (error) {
+                    console.error('Error liking post:', error);
+                }
+            });
+        });
+    });
+</script>

@@ -1,162 +1,227 @@
-<!-- main -->
-<!-- templates/default/base/main.ejs -->
-<%
-// Determine if this should render as popup
-const isPopup = locals.popup || false;
-const currentView = locals.currentView || 'home';
-const wrapperClass = isPopup ? 'popup-wrapper' : 'main-wrapper';
-%>
-
-<% if (!isPopup) { %>
-  <!-- Standard Header -->
-  <header class="main-header">
-    <%- include('./partials/header') %>
-  </header>
-<% } %>
-
-<div class="<%= wrapperClass %>" id="main-content">
-  <!-- Dynamic Content Injection -->
-  <% if (currentView === 'auth/login') { %>
-    <%- include('./../auth/facebook') %>
-
-  <% } else if (currentView === 'auth/signup') { %>
-    <%- include('./../auth/signup') %>
-
-  <% } else if (currentView === 'pages/marketplace') { %>
-    <%- include('./pages/marketplace') %>
-
-  <% } else if (currentView === 'pages/manage') { %>
-    <%- include('./pages/manage') %>
-
+<!-- main.ejs (to be rendered below post-creator) -->
+<div class="feed-container">
+  <% if (typeof posts !== 'undefined' && posts.length > 0) { %>
+      <% posts.forEach(post => { %>
+          <div class="post-card">
+              <div class="post-header">
+                  <img src="<%= post.user.avatar || '/assets/images/default-avatar.jpg' %>" 
+                       alt="<%= post.user.name %>" 
+                       class="post-avatar"
+                       onerror="this.onerror=null;this.src='/assets/images/default-avatar.jpg'">
+                  <div class="post-user-info">
+                      <span class="post-username"><%= post.user.name %></span>
+                      <span class="post-time"><%= new Date(post.createdAt).toLocaleString() %></span>
+                      <span class="post-privacy">
+                          <i class="fas fa-<%= post.privacy === 'EVERYONE' ? 'globe' : (post.privacy === 'FRIENDS' ? 'user-friends' : 'lock') %>"></i>
+                      </span>
+                  </div>
+              </div>
+              
+              <div class="post-content">
+                  <p><%= post.content %></p>
+                  <% if (post.media && post.media.length > 0) { %>
+                      <div class="post-media">
+                          <% post.media.forEach(media => { %>
+                              <% if (media.type.startsWith('image')) { %>
+                                  <img src="<%= media.url %>" alt="Post image" class="post-image">
+                              <% } else if (media.type.startsWith('video')) { %>
+                                  <video controls class="post-video">
+                                      <source src="<%= media.url %>" type="<%= media.type %>">
+                                  </video>
+                              <% } %>
+                          <% }); %>
+                      </div>
+                  <% } %>
+              </div>
+              
+              <div class="post-stats">
+                  <span class="post-likes"><i class="fas fa-thumbs-up"></i> <%= post.likes || 0 %></span>
+                  <span class="post-comments"><%= post.comments || 0 %> comments</span>
+                  <span class="post-shares"><%= post.shares || 0 %> shares</span>
+              </div>
+              
+              <div class="post-actions">
+                  <button class="post-action like-btn" data-post-id="<%= post._id %>">
+                      <i class="far fa-thumbs-up"></i> Like
+                  </button>
+                  <button class="post-action comment-btn" data-post-id="<%= post._id %>">
+                      <i class="far fa-comment"></i> Comment
+                  </button>
+                  <button class="post-action share-btn" data-post-id="<%= post._id %>">
+                      <i class="far fa-share-square"></i> Share
+                  </button>
+              </div>
+              
+              <% if (post.relatedPosts && post.relatedPosts.length > 0) { %>
+                  <div class="related-posts">
+                      <h4>Related Posts</h4>
+                      <% post.relatedPosts.forEach(related => { %>
+                          <div class="related-post">
+                              <img src="<%= related.user.avatar || '/assets/images/default-avatar.jpg' %>" 
+                                   alt="<%= related.user.name %>" 
+                                   class="related-avatar">
+                              <div class="related-content">
+                                  <span class="related-username"><%= related.user.name %></span>
+                                  <p class="related-text"><%= related.content.substring(0, 100) %><%= related.content.length > 100 ? '...' : '' %></p>
+                              </div>
+                          </div>
+                      <% }); %>
+                  </div>
+              <% } %>
+          </div>
+      <% }); %>
   <% } else { %>
-    <!-- Default/Home View -->
-    <%- include('./pages/home') %>
+      <div class="empty-feed">
+          <p>No posts to show. Be the first to post something!</p>
+      </div>
   <% } %>
 </div>
 
-<% if (!isPopup) { %>
-
-<% } %>
-
-<!-- Popup Container (hidden by default) -->
-<div id="popup-container" class="popup-container" style="display: none;">
-  <div class="popup-backdrop"></div>
-  <div class="popup-content">
-    <button class="popup-close">&times;</button>
-    <div class="popup-body" id="popup-content-target"></div>
-  </div>
-</div>
-
-<!-- Dynamic Content Loading Script -->
-<script>
-  // Handle popup views
-  function loadView(view, options = {}) {
-    const { asPopup = false } = options;
-    
-    if (asPopup) {
-      fetch(`/${view}?popup=true`)
-        .then(res => res.text())
-        .then(html => {
-          document.getElementById('popup-content-target').innerHTML = html;
-          document.getElementById('popup-container').style.display = 'block';
-        });
-    } else {
-      window.location.href = `/${view}`;
-    }
-  }
-
-  // Close popup handler
-  document.querySelector('.popup-close').addEventListener('click', () => {
-    document.getElementById('popup-container').style.display = 'none';
-  });
-
-  // Close when clicking backdrop
-  document.querySelector('.popup-backdrop').addEventListener('click', () => {
-    document.getElementById('popup-container').style.display = 'none';
-  });
-
-  // Handle popup URL parameter
-  if (new URLSearchParams(window.location.search).has('popup')) {
-    document.getElementById('main-content').classList.add('popup-view');
-  }
-</script>
 
 <style>
-  /* Main Layout */
-  .main-wrapper {
-    min-height: calc(100vh - 120px);
-    padding: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-
-  /* Popup Styles */
-  .popup-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1000;
-    display: none;
-  }
-
-  .popup-backdrop {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
-  }
-
-  .popup-content {
-    position: relative;
-    background: white;
-    margin: 5% auto;
-    padding: 30px;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 600px;
-    max-height: 90vh;
-    overflow-y: auto;
-    animation: popupFadeIn 0.3s ease-out;
-  }
-
-  .popup-close {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    font-size: 24px;
-    background: none;
-    border: none;
-    cursor: pointer;
-  }
-
-  /* Popup-specific view styling */
-  .popup-view {
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.2);
-    margin: 20px auto;
-    padding: 30px;
-    max-width: 600px;
-  }
-
-  @keyframes popupFadeIn {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* Responsive adjustments */
-  @media (max-width: 768px) {
-    .popup-content {
-      width: 95%;
-      padding: 20px;
-      margin: 2% auto;
+   /* Feed Styles */
+   .feed-container {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
     }
-
-    .popup-view {
-      margin: 10px;
-      padding: 15px;
+    
+    .post-card {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        padding: 16px;
     }
-  }
+    
+    .post-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+    
+    .post-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 12px;
+    }
+    
+    .post-user-info {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .post-username {
+        font-weight: 600;
+    }
+    
+    .post-time {
+        font-size: 12px;
+        color: #65676b;
+    }
+    
+    .post-privacy {
+        font-size: 12px;
+        color: #65676b;
+    }
+    
+    .post-content {
+        margin-bottom: 12px;
+    }
+    
+    .post-media {
+        margin-top: 12px;
+    }
+    
+    .post-image {
+        max-width: 100%;
+        max-height: 500px;
+        border-radius: 8px;
+    }
+    
+    .post-video {
+        width: 100%;
+        max-height: 500px;
+        border-radius: 8px;
+    }
+    
+    .post-stats {
+        display: flex;
+        align-items: center;
+        padding: 8px 0;
+        border-top: 1px solid #ddd;
+        border-bottom: 1px solid #ddd;
+        color: #65676b;
+        font-size: 14px;
+    }
+    
+    .post-stats span {
+        margin-right: 16px;
+    }
+    
+    .post-actions {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+    }
+    
+    .post-action {
+        flex: 1;
+        background: none;
+        border: none;
+        padding: 8px;
+        border-radius: 4px;
+        cursor: pointer;
+        color: #65676b;
+        font-weight: 600;
+    }
+    
+    .post-action:hover {
+        background: #f0f2f5;
+    }
+    
+    /* Related Posts */
+    .related-posts {
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid #ddd;
+    }
+    
+    .related-posts h4 {
+        margin-bottom: 8px;
+        font-size: 16px;
+    }
+    
+    .related-post {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+        padding: 8px;
+        border-radius: 8px;
+        background: #f0f2f5;
+    }
+    
+    .related-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 8px;
+    }
+    
+    .related-content {
+        flex: 1;
+    }
+    
+    .related-username {
+        font-weight: 600;
+        font-size: 14px;
+    }
+    
+    .related-text {
+        font-size: 13px;
+        color: #65676b;
+        margin: 0;
+    }
 </style>
