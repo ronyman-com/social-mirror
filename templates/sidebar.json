@@ -1,51 +1,137 @@
 {
-  "menu": [
+  "version": 2,
+  "items": [
+    {
+      "title": "Home",
+      "text": "Home",
+      "path": "/pages/home.md",
+      "link": "/",
+      "icon": "home",
+      "type": "file"
+    },
     {
       "title": "Friends",
-      "icon": "friends",
-      "link": "/friends"
+      "text": "Friends",
+      "path": "/friends",
+      "link": "/friends",
+      "icon": "user-friends",
+      "type": "route"
     },
     {
       "title": "Groups",
-      "icon": "groups",
-      "link": "/groups"
+      "text": "Groups",
+      "path": "/groups",
+      "link": "/groups",
+      "icon": "users",
+      "type": "route"
     },
     {
       "title": "Marketplace",
-      "icon": "marketplace",
-      "link": "/marketplace"
+      "text": "Marketplace",
+      "link": "pages/marketplace",
+      "icon": "store",
+      "type": "file"
     },
     {
       "title": "Watch",
-      "icon": "watch",
-      "link": "/watch"
+      "text": "Watch",
+      "link": "/watch",
+      "icon": "tv",
+      "type": "route"
     },
     {
       "title": "Memories",
-      "icon": "memories",
-      "link": "/memories"
+      "text": "Memories",
+      "link": "/memories",
+      "icon": "history",
+      "type": "route"
+    },
+    {
+      "title": "Login From Facebook",
+      "text": "Login",
+      "link": "/auth/login",
+      "icon": "sign-in-alt",
+      "type": "file",
+      "guestOnly": true
+    },
+    {
+      "title": "Login From Google",
+      "text": "Login",
+      "link": "/auth/google",
+      "icon": "sign-in-alt",
+      "type": "file",
+      "guestOnly": true
+    },
+
+
+
+
+   
+    {
+      "title": "Sign Up",
+      "text": "Sign Up",
+      "link": "/auth/signup",
+      "icon": "user-plus",
+      "type": "file",
+      "guestOnly": true
+    },
+    {
+      "title": "Log Out",
+      "text": "Log Out",
+      "link": "/auth/logout",
+      "icon": "sign-out-alt",
+      "type": "file",
+      "authOnly": true
     }
   ],
   "shortcuts": [
     {
       "title": "Developer Community",
+      "text": "Developer Community",
+      "path": "/groups/developers",
+      "link": "/groups/developers",
       "icon": "code",
-      "link": "/groups/developers"
+      "type": "route"
     },
     {
       "title": "Tech News",
+      "text": "Tech News",
+      "link": "/tech-news",
       "image": "/images/tech-news.png",
-      "link": "/pages/tech-news"
+      "type": "file"
     },
     {
       "title": "Local Events",
-      "icon": "events",
-      "link": "/events/local"
+      "text": "Local Events",
+      "path": "/events/local",
+      "link": "/events/local",
+      "icon": "calendar-alt",
+      "type": "route"
     },
     {
       "title": "Gaming Group",
+      "text": "Gaming Group",
+      "path": "/groups/gaming",
+      "link": "/groups/gaming",
       "image": "/images/gaming.png",
-      "link": "/groups/gaming"
+      "type": "route"
     }
-  ]
+  ],
+  "settings": {
+    "iconMapping": {
+      "friends": "user-friends",
+      "groups": "users",
+      "marketplace": "store",
+      "watch": "tv",
+      "memories": "history"
+    },
+    "compatibility": {
+      "v1": true,
+      "v2": true
+    },
+    "responsive": {
+      "mobileBreakpoint": 768,
+      "collapsed": false
+    }
+  }
 }

@@ -1,0 +1,10 @@
+{
+    "plugins": {
+      "facebook": {
+        "enabled": true,
+        "appId": "1045149775909016",
+        "version": "v19.0",
+        "globalVar": "app"
+      }
+    }
+  }

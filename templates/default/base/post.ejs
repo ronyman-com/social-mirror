@@ -1,42 +1,105 @@
 <div class="post card" data-post-id="<%= post.id %>">
-    <div class="post-header">
-      <img src="<%= post.user.avatar %>" alt="User" class="post-avatar">
+  <div class="post-header">
+      <img src="<%= post.user.avatar || '/assets/images/default-avatar.png' %>" alt="<%= post.user.name %>" class="post-avatar">
       <div class="post-user-info">
-        <h4><%= post.user.name %></h4>
-        <div class="post-meta">
-          <span class="post-time"><%= post.time %></span>
-          <i class="fas fa-globe-americas"></i>
-        </div>
+          <h4><a href="/profile/<%= post.user.id %>"><%= post.user.name %></a></h4>
+          <div class="post-meta">
+              <span class="post-time" title="<%= new Date(post.created_time).toLocaleString() %>">
+                  <%= timeAgo(new Date(post.created_time)) %>
+              </span>
+              <span class="post-privacy">
+                  <i class="fas fa-globe-americas" title="Public"></i>
+              </span>
+          </div>
       </div>
-    </div>
-    
-    <div class="post-content">
-      <p><%= post.content %></p>
-      <% if (post.image) { %>
-        <img src="<%= post.image %>" alt="Post image" class="post-image">
+      <div class="post-options">
+          <button class="post-option-btn"><i class="fas fa-ellipsis-h"></i></button>
+          <div class="post-options-menu">
+              <button class="option-item save-post">Save post</button>
+              <button class="option-item hide-post">Hide post</button>
+              <button class="option-item report-post">Report post</button>
+          </div>
+      </div>
+  </div>
+  
+  <div class="post-content">
+      <% if (post.message) { %>
+          <p><%= post.message %></p>
       <% } %>
-    </div>
-    
-    <div class="post-stats">
+      
+      <% if (post.attachments && post.attachments.data.length > 0) { %>
+          <div class="post-media">
+              <% post.attachments.data.forEach(attachment => { %>
+                  <% if (attachment.type === 'photo') { %>
+                      <img src="<%= attachment.media.image.src %>" alt="Post image" class="post-image">
+                  <% } else if (attachment.type === 'video') { %>
+                      <div class="video-container">
+                          <video controls>
+                              <source src="<%= attachment.media.source %>" type="video/mp4">
+                          </video>
+                      </div>
+                  <% } %>
+              <% }); %>
+          </div>
+      <% } %>
+  </div>
+  
+  <div class="post-stats">
       <div class="post-likes">
-        <i class="fas fa-thumbs-up"></i>
-        <span><%= post.likes %></span>
+          <% if (post.likes && post.likes.summary.total_count > 0) { %>
+              <i class="fas fa-thumbs-up"></i>
+              <span><%= post.likes.summary.total_count %></span>
+          <% } %>
       </div>
       <div class="post-comments-shares">
-        <span><%= post.comments %> comments</span>
-        <span><%= post.shares %> shares</span>
+          <% if (post.comments && post.comments.data.length > 0) { %>
+              <span><%= post.comments.data.length %> comments</span>
+          <% } %>
+          <% if (post.shares && post.shares.count > 0) { %>
+              <span><%= post.shares.count %> shares</span>
+          <% } %>
       </div>
-    </div>
-    
-    <div class="post-actions">
-      <button class="post-action like-btn" data-post-id="<%= post.id %>">
-        <i class="far fa-thumbs-up"></i> Like
+  </div>
+  
+  <div class="post-actions">
+      <button class="post-action like-btn <%= post.liked ? 'active' : '' %>" data-post-id="<%= post.id %>">
+          <i class="<%= post.liked ? 'fas' : 'far' %> fa-thumbs-up"></i> 
+          <span>Like</span>
       </button>
       <button class="post-action comment-btn">
-        <i class="far fa-comment"></i> Comment
+          <i class="far fa-comment"></i> 
+          <span>Comment</span>
       </button>
       <button class="post-action share-btn">
-        <i class="fas fa-share"></i> Share
+          <i class="fas fa-share"></i> 
+          <span>Share</span>
       </button>
-    </div>
   </div>
+  
+  <% if (post.comments && post.comments.data.length > 0) { %>
+      <div class="post-comments-preview">
+          <% post.comments.data.slice(0, 2).forEach(comment => { %>
+              <div class="comment-preview">
+                  <img src="<%= comment.from.picture.data.url %>" alt="<%= comment.from.name %>" class="comment-avatar">
+                  <div class="comment-content">
+                      <span class="comment-author"><%= comment.from.name %></span>
+                      <p><%= comment.message %></p>
+                  </div>
+              </div>
+          <% }); %>
+          <% if (post.comments.data.length > 2) { %>
+              <button class="view-all-comments">View all <%= post.comments.data.length %> comments</button>
+          <% } %>
+      </div>
+  <% } %>
+  
+  <div class="post-comment-box">
+      <img src="<%= currentUser.avatar %>" alt="<%= currentUser.name %>" class="comment-avatar">
+      <input type="text" placeholder="Write a comment..." class="comment-input">
+      <div class="comment-options">
+          <button class="comment-option"><i class="far fa-smile"></i></button>
+          <button class="comment-option"><i class="fas fa-camera"></i></button>
+          <button class="comment-option"><i class="fas fa-gift"></i></button>
+      </div>
+  </div>
+</div>

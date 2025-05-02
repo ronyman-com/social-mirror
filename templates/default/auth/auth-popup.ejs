@@ -1,0 +1,185 @@
+<!-- templates/default/base/auth-popup.ejs -->
+<div class="auth-popup" id="authPopup">
+    <div class="auth-popup-content">
+      <button class="close-popup">&times;</button>
+      <div class="auth-options">
+        <button class="auth-btn google-auth" id="googleAuthBtn">
+          <i class="fab fa-google"></i>
+          <span>Continue with Google</span>
+        </button>
+        <button class="auth-btn facebook-auth" id="facebookAuthBtn">
+          <i class="fab fa-facebook"></i>
+          <span>Continue with Facebook</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <style>
+    .auth-popup {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+  
+    .auth-popup-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 400px;
+      position: relative;
+    }
+  
+    .close-popup {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+  
+    .auth-options {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+  
+    .auth-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+  
+    .google-auth {
+      background: #fff;
+      color: #757575;
+      border: 1px solid #ddd;
+    }
+  
+    .google-auth:hover {
+      background: #f8f8f8;
+    }
+  
+    .facebook-auth {
+      background: #1877f2;
+      color: white;
+    }
+  
+    .facebook-auth:hover {
+      background: #166fe5;
+    }
+  </style>
+  
+  <script>
+    // Initialize Firebase
+    const firebaseConfig = {
+      apiKey: "<%= process.env.FIREBASE_API_KEY %>",
+      authDomain: "<%= process.env.FIREBASE_AUTH_DOMAIN %>",
+      projectId: "<%= process.env.FIREBASE_PROJECT_ID %>",
+      storageBucket: "<%= process.env.FIREBASE_STORAGE_BUCKET %>",
+      messagingSenderId: "<%= process.env.FIREBASE_MESSAGING_SENDER_ID %>",
+      appId: "<%= process.env.FIREBASE_APP_ID %>"
+    };
+  
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+  
+    document.addEventListener('DOMContentLoaded', function() {
+      const authPopup = document.getElementById('authPopup');
+      const closePopup = document.querySelector('.close-popup');
+      const googleAuthBtn = document.getElementById('googleAuthBtn');
+      const facebookAuthBtn = document.getElementById('facebookAuthBtn');
+  
+      // Show popup function (call this from your login button)
+      window.showAuthPopup = function() {
+        authPopup.style.display = 'flex';
+      };
+  
+      // Close popup
+      closePopup.addEventListener('click', () => {
+        authPopup.style.display = 'none';
+      });
+  
+      // Google authentication
+      googleAuthBtn.addEventListener('click', async () => {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        try {
+          const result = await firebase.auth().signInWithPopup(provider);
+          handleAuthResult(result);
+        } catch (error) {
+          console.error('Google auth error:', error);
+          alert('Google authentication failed: ' + error.message);
+        }
+      });
+  
+      // Facebook authentication
+      facebookAuthBtn.addEventListener('click', async () => {
+        const provider = new firebase.auth.FacebookAuthProvider();
+        provider.addScope('public_profile,email');
+        try {
+          const result = await firebase.auth().signInWithPopup(provider);
+          handleAuthResult(result);
+        } catch (error) {
+          console.error('Facebook auth error:', error);
+          alert('Facebook authentication failed: ' + error.message);
+        }
+      });
+  
+      // Handle authentication result
+      async function handleAuthResult(result) {
+        const user = result.user;
+        const credential = result.credential;
+        const token = credential.accessToken;
+  
+        // Send token to your backend
+        try {
+          const response = await fetch('/auth/callback', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-Token': '<%= csrfToken %>'
+            },
+            body: JSON.stringify({
+              provider: credential.providerId,
+              token: token,
+              user: {
+                uid: user.uid,
+                email: user.email,
+                name: user.displayName,
+                avatar: user.photoURL
+              }
+            })
+          });
+  
+          if (response.ok) {
+            authPopup.style.display = 'none';
+            window.location.reload(); // Refresh to update auth state
+          } else {
+            throw new Error('Authentication failed');
+          }
+        } catch (error) {
+          console.error('Auth callback error:', error);
+          alert('Authentication failed. Please try again.');
+        }
+      }
+    });
+  </script>

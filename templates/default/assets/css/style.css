@@ -50,10 +50,31 @@
     justify-content: space-between;
   }
   
-  .logo {
-    height: 40px;
-  }
-  
+
+/* Logo Styles */
+.logo a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.logo-img {
+  height: 40px;
+  width: auto;
+  transition: transform 0.2s ease;
+}
+
+.logo-img:hover {
+  transform: scale(1.05);
+}
+
+.logo-text {
+  font-size: 24px;
+  font-weight: bold;
+  color: #1877f2;
+  margin-left: 8px;
+  display: none; /* Hidden by default, shows on mobile */
+}
   .search-bar {
     background-color: var(--bg-color);
     border-radius: 50px;

@@ -1,0 +1,95 @@
+<div class="page-container">
+    <div class="page-header">
+        <div class="page-cover">
+            <img src="<%= page.cover || '/assets/images/default-cover.jpg' %>" alt="<%= page.name %> Cover">
+            <div class="page-avatar">
+                <img src="<%= page.avatar %>" alt="<%= page.name %>">
+            </div>
+        </div>
+        
+        <div class="page-info">
+            <h1><%= page.name %></h1>
+            <div class="page-meta">
+                <span class="page-category"><i class="fas fa-tag"></i> <%= page.category %></span>
+                <span class="page-likes"><i class="fas fa-thumbs-up"></i> <%= page.likes %> likes</span>
+                <span class="page-followers"><i class="fas fa-users"></i> <%= page.followers %> followers</span>
+            </div>
+            
+            <div class="page-buttons">
+                <button class="page-button like-button <%= page.liked ? 'active' : '' %>">
+                    <i class="fas fa-thumbs-up"></i> <%= page.liked ? 'Liked' : 'Like' %>
+                </button>
+                <button class="page-button follow-button <%= page.followed ? 'active' : '' %>">
+                    <i class="fas fa-bell"></i> <%= page.followed ? 'Following' : 'Follow' %>
+                </button>
+                <button class="page-button message-button">
+                    <i class="fas fa-envelope"></i> Message
+                </button>
+                <button class="page-button more-button">
+                    <i class="fas fa-ellipsis-h"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="page-content">
+        <div class="page-sidebar">
+            <div class="page-section about-section">
+                <h3>About</h3>
+                <p><%= page.about %></p>
+                
+                <% if (page.website) { %>
+                    <div class="page-link">
+                        <i class="fas fa-globe"></i>
+                        <a href="<%= page.website %>" target="_blank"><%= page.website %></a>
+                    </div>
+                <% } %>
+                
+                <% if (page.phone) { %>
+                    <div class="page-link">
+                        <i class="fas fa-phone"></i>
+                        <span><%= page.phone %></span>
+                    </div>
+                <% } %>
+                
+                <% if (page.email) { %>
+                    <div class="page-link">
+                        <i class="fas fa-envelope"></i>
+                        <span><%= page.email %></span>
+                    </div>
+                <% } %>
+            </div>
+            
+            <div class="page-section photos-section">
+                <h3>Photos</h3>
+                <div class="photos-grid">
+                    <% page.photos.slice(0, 9).forEach(photo => { %>
+                        <img src="<%= photo %>" alt="Page photo">
+                    <% }); %>
+                    <% if (page.photos.length > 9) { %>
+                        <a href="#" class="see-all-photos">See all <%= page.photos.length %> photos</a>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+        
+        <div class="page-main">
+            <div class="page-posts">
+                <% if (user && page.canPost) { %>
+                    <%- include('post-creator') %>
+                <% } %>
+                
+                <% if (page.posts && page.posts.length > 0) { %>
+                    <% page.posts.forEach(post => { %>
+                        <%- include('post', { post }) %>
+                    <% }); %>
+                <% } else { %>
+                    <div class="no-posts">
+                        <i class="fas fa-newspaper"></i>
+                        <p>No posts to display</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>

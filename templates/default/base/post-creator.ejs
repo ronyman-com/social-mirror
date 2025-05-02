@@ -1,211 +1,328 @@
-<div class="post-creator card">
-    <div class="creator-header">
-        <% if (typeof user !== 'undefined' && user) { %>
-            <img src="<%= user.avatar || '/assets/images/default-avatar.jpg' %>" 
-                 alt="<%= user.name || 'User' %>" 
-                 class="creator-avatar"
-                 onerror="this.onerror=null;this.src='/assets/images/default-avatar.jpg'">
-            <input type="text" 
-                   placeholder="What's on your mind, <%= user.name ? user.name.split(' ')[0] : 'User' %>?" 
-                   class="post-input"
-                   id="post-content-input">
-        <% } else { %>
-            <div class="creator-avatar default-avatar">
-                <i class="fas fa-user-circle"></i>
+<div class="post-creator-container">
+    <% if (typeof user === 'undefined' || !user) { %>
+        <div class="login-prompt">
+            <button id="postCreatorFbLoginBtn" class="fb-login-button">
+                <i class="fab fa-facebook"></i> Continue with Facebook to post
+            </button>
+        </div>
+    <% } else { %>
+        <div class="post-creator card">
+            <div class="creator-header">
+                <img src="<%= user.avatar || '/assets/images/default-avatar.jpg' %>" 
+                     alt="<%= user.name || 'User' %>" 
+                     class="creator-avatar"
+                     onerror="this.onerror=null;this.src='/assets/images/default-avatar.jpg'">
+                <input type="text" 
+                       placeholder="What's on your mind, <%= user.name ? user.name.split(' ')[0] : 'User' %>?" 
+                       class="post-input"
+                       id="postContentInput">
             </div>
-            <input type="text" 
-                   placeholder="What's on your mind?" 
-                   class="post-input"
-                   id="post-content-input"
-                   disabled>
-        <% } %>
-    </div>
-    
-    <div class="creator-divider"></div>
-    
-    <div class="creator-options">
-        <button class="creator-option" data-type="photo" onclick="handlePostOption('photo')">
-            <i class="fas fa-images"></i>
-            <span>Photo/Video</span>
-        </button>
-        <button class="creator-option" data-type="feeling" onclick="handlePostOption('feeling')">
-            <i class="fas fa-smile"></i>
-            <span>Feeling/Activity</span>
-        </button>
-        <button class="creator-option" data-type="live" onclick="handlePostOption('live')">
-            <i class="fas fa-video"></i>
-            <span>Live Video</span>
-        </button>
-    </div>
-    
-    <!-- Hidden file input for photo/video upload -->
-    <input type="file" 
-           id="media-upload" 
-           accept="image/*,video/*" 
-           style="display: none;" 
-           multiple>
+            
+            <div class="creator-divider"></div>
+            
+            <div class="creator-options">
+                <button class="creator-option" data-type="photo">
+                    <i class="fas fa-images"></i>
+                    <span>Photo/Video</span>
+                </button>
+                <button class="creator-option" data-type="feeling">
+                    <i class="fas fa-smile"></i>
+                    <span>Feeling/Activity</span>
+                </button>
+                <button class="creator-option" data-type="live">
+                    <i class="fas fa-video"></i>
+                    <span>Live Video</span>
+                </button>
+            </div>
+            
+            <input type="file" id="mediaUpload" accept="image/*,video/*" style="display: none;" multiple>
+        </div>
+        
+        <!-- Post Modal -->
+        <div id="postModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Create Post</h3>
+                    <span class="close-modal">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div class="media-preview" id="mediaPreview"></div>
+                    <textarea id="postText" placeholder="What's on your mind?"></textarea>
+                    <div class="privacy-selector">
+                        <select id="postPrivacy">
+                            <option value="EVERYONE">Public</option>
+                            <option value="FRIENDS">Friends</option>
+                            <option value="SELF">Only me</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="submitPostBtn" class="btn-primary">Post</button>
+                </div>
+            </div>
+        </div>
+    <% } %>
 </div>
 
 <script>
-// Handle post creation options
-function handlePostOption(type) {
-    if (typeof user === 'undefined') {
-        showLoginPrompt();
-        return;
+    // Initialize Firebase
+    const firebaseConfig = {
+        apiKey: "<%= process.env.FIREBASE_API_KEY %>",
+        authDomain: "<%= process.env.FIREBASE_AUTH_DOMAIN %>",
+        projectId: "<%= process.env.FIREBASE_PROJECT_ID %>",
+        storageBucket: "<%= process.env.FIREBASE_STORAGE_BUCKET %>",
+        messagingSenderId: "<%= process.env.FIREBASE_MESSAGING_SENDER_ID %>",
+        appId: "<%= process.env.FIREBASE_APP_ID %>"
+    };
+
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
     }
 
-    switch(type) {
-        case 'photo':
-            document.getElementById('media-upload').click();
-            break;
-        case 'feeling':
-            openFeelingSelector();
-            break;
-        case 'live':
-            initLiveVideo();
-            break;
-    }
-}
+    // Facebook Login for Post Creator
+    document.getElementById('postCreatorFbLoginBtn')?.addEventListener('click', loginWithFacebook);
 
-// Handle file selection
-document.getElementById('media-upload').addEventListener('change', function(e) {
-    const files = e.target.files;
-    if (files.length > 0) {
-        openPostModalWithMedia(files);
+    function loginWithFacebook() {
+    const provider = new firebase.auth.FacebookAuthProvider();
+    provider.addScope('public_profile');
+    provider.addScope('email');
+
+    firebase.auth()
+  .signInWithPopup(provider)
+  .then((result) => {
+    const user = result.user;
+    const credential = result.credential;
+    
+    // First get CSRF token from meta tag
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+    
+    return fetch('/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken
+      },
+      body: JSON.stringify({
+        accessToken: credential.accessToken,
+        userId: user.uid,
+        email: user.email,
+        displayName: user.displayName,
+        photoURL: user.photoURL
+      })
+    });
+  })
+  .then(response => {
+    if (response.ok) {
+      window.location.reload();
+    } else {
+      throw new Error('Authentication failed');
+    }
+  })
+  .catch((error) => {
+    console.error('Login error:', error);
+    alert('Facebook login failed: ' + error.message);
+  });
+
+    // Post Creator Functionality
+    document.querySelectorAll('.creator-option').forEach(button => {
+        button.addEventListener('click', function() {
+            const type = this.getAttribute('data-type');
+            handlePostOption(type);
+        });
+    });
+
+    function handlePostOption(type) {
+        switch(type) {
+            case 'photo':
+                document.getElementById('mediaUpload').click();
+                break;
+            case 'feeling':
+                openFeelingSelector();
+                break;
+            case 'live':
+                initLiveVideo();
+                break;
+        }
+    }
+
+    document.getElementById('mediaUpload').addEventListener('change', function(e) {
+        const files = e.target.files;
+        if (files.length > 0) {
+            openPostModalWithMedia(files);
+        }
+    });
+
+    function openPostModalWithMedia(files) {
+        const previewContainer = document.getElementById('mediaPreview');
+        previewContainer.innerHTML = '';
+        
+        Array.from(files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const mediaElement = file.type.startsWith('image') ? 
+                    `<img src="${e.target.result}" alt="Preview">` :
+                    `<video controls src="${e.target.result}"></video>`;
+                previewContainer.innerHTML += mediaElement;
+            };
+            reader.readAsDataURL(file);
+        });
+        
+        const modal = document.getElementById('postModal');
+        modal.style.display = 'block';
+    }
+
+    // Modal close functionality
+    document.querySelector('.close-modal')?.addEventListener('click', function() {
+        document.getElementById('postModal').style.display = 'none';
+    });
+
+    // Post submission
+document.getElementById('submitPostBtn')?.addEventListener('click', async function(e) {
+    e.preventDefault(); // Prevent default form submission
+    
+    try {
+        // Get CSRF token from meta tag (recommended approach)
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+        if (!csrfToken) {
+            throw new Error('CSRF token not found');
+        }
+
+        // Get form values
+        const postText = document.getElementById('postText').value;
+        const privacy = document.getElementById('postPrivacy').value;
+        const files = document.getElementById('mediaUpload').files;
+        
+        // Validate required fields
+        if (!postText.trim() && files.length === 0) {
+            throw new Error('Please add some text or media to your post');
+        }
+
+        // Prepare form data
+        const formData = new FormData();
+        formData.append('content', postText);
+        formData.append('privacy', privacy);
+        formData.append('_csrf', csrfToken); // Alternative CSRF method
+        
+        // Add media files if any
+        if (files.length > 0) {
+            Array.from(files).forEach((file, index) => {
+                formData.append(`media_${index}`, file);
+            });
+        }
+
+        // Show loading state
+        const submitBtn = document.getElementById('submitPostBtn');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Posting...';
+
+        // Submit the post
+        const response = await fetch('/api/posts', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-Token': csrfToken // Using header approach
+            },
+            body: formData
+        });
+
+        // Handle response
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Post submission failed');
+        }
+
+        // Success - reload or redirect
+        window.location.reload();
+        
+    } catch (error) {
+        console.error('Post creation error:', error);
+        
+        // Show error to user
+        const errorElement = document.getElementById('postError') || createErrorElement();
+        errorElement.textContent = error.message;
+        errorElement.style.display = 'block';
+        
+        // Reset button state
+        const submitBtn = document.getElementById('submitPostBtn');
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Post';
+        }
     }
 });
 
-function openPostModalWithMedia(files) {
-    // Create preview of selected media
-    const previewContainer = document.createElement('div');
-    previewContainer.className = 'media-preview';
-    
-    Array.from(files).forEach(file => {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const mediaElement = file.type.startsWith('image') ? 
-                `<img src="${e.target.result}" alt="Preview">` :
-                `<video controls src="${e.target.result}"></video>`;
-            previewContainer.innerHTML += mediaElement;
-        };
-        reader.readAsDataURL(file);
-    });
-    
-    // Open modal with preview
-    const modal = document.getElementById('post-modal');
-    modal.querySelector('.modal-body').prepend(previewContainer);
-    modal.style.display = 'block';
-}
-
-function showLoginPrompt() {
-    alert('Please log in to create posts');
+// Helper function to create error display element
+function createErrorElement() {
+    const errorDiv = document.createElement('div');
+    errorDiv.id = 'postError';
+    errorDiv.className = 'post-error-message';
+    errorDiv.style.display = 'none';
+    document.querySelector('.modal-body').prepend(errorDiv);
+    return errorDiv;
 }
 </script>
 
 <style>
-.post-creator {
-    background: var(--card-bg);
-    border-radius: 8px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-    margin-bottom: 16px;
-    padding: 12px 16px;
-}
-
-.creator-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding-bottom: 12px;
-}
-
-.creator-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.default-avatar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 40px;
-    color: #65676b;
-}
-
-.post-input {
-    flex: 1;
-    background: var(--bg-color);
-    border: none;
-    border-radius: 20px;
-    padding: 8px 12px;
-    font-size: 15px;
-}
-
-.post-input:focus {
-    outline: none;
-    background: var(--card-bg);
-    box-shadow: 0 0 0 1px var(--primary-blue);
-}
-
-.creator-divider {
-    height: 1px;
-    background: var(--divider);
-    margin: 8px 0;
-}
-
-.creator-options {
-    display: flex;
-    justify-content: space-between;
-}
-
-.creator-option {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 8px;
-    border-radius: 4px;
-    border: none;
-    background: transparent;
-    color: var(--text-secondary);
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.creator-option:hover {
-    background: var(--hover-gray);
-}
-
-.creator-option i {
-    font-size: 20px;
-}
-
-.creator-option[data-type="photo"] i {
-    color: #45bd62;
-}
-
-.creator-option[data-type="feeling"] i {
-    color: #f7b928;
-}
-
-.creator-option[data-type="live"] i {
-    color: #f5535d;
-}
-
-.media-preview {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 8px;
-    margin-bottom: 12px;
-}
-
-.media-preview img, 
-.media-preview video {
-    width: 100%;
-    border-radius: 4px;
-    max-height: 200px;
-    object-fit: cover;
-}
+    /* Your existing styles plus: */
+    .post-creator-container {
+        margin-bottom: 20px;
+    }
+    
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+    }
+    
+    .modal-content {
+        background: white;
+        margin: 10% auto;
+        padding: 20px;
+        border-radius: 8px;
+        width: 500px;
+        max-width: 90%;
+    }
+    
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    
+    .close-modal {
+        font-size: 24px;
+        cursor: pointer;
+    }
+    
+    textarea#postText {
+        width: 100%;
+        min-height: 100px;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        resize: vertical;
+        margin-bottom: 15px;
+    }
+    
+    .privacy-selector {
+        margin-bottom: 15px;
+    }
+    
+    .modal-footer {
+        text-align: right;
+    }
+    
+    .btn-primary {
+        background: #1877f2;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+    }
 </style>

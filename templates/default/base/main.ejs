@@ -1,3 +1,162 @@
-<!-- Create Post -->
+<!-- main -->
+<!-- templates/default/base/main.ejs -->
+<%
+// Determine if this should render as popup
+const isPopup = locals.popup || false;
+const currentView = locals.currentView || 'home';
+const wrapperClass = isPopup ? 'popup-wrapper' : 'main-wrapper';
+%>
 
+<% if (!isPopup) { %>
+  <!-- Standard Header -->
+  <header class="main-header">
+    <%- include('./partials/header') %>
+  </header>
+<% } %>
 
+<div class="<%= wrapperClass %>" id="main-content">
+  <!-- Dynamic Content Injection -->
+  <% if (currentView === 'auth/login') { %>
+    <%- include('./../auth/facebook') %>
+
+  <% } else if (currentView === 'auth/signup') { %>
+    <%- include('./../auth/signup') %>
+
+  <% } else if (currentView === 'pages/marketplace') { %>
+    <%- include('./pages/marketplace') %>
+
+  <% } else if (currentView === 'pages/manage') { %>
+    <%- include('./pages/manage') %>
+
+  <% } else { %>
+    <!-- Default/Home View -->
+    <%- include('./pages/home') %>
+  <% } %>
+</div>
+
+<% if (!isPopup) { %>
+
+<% } %>
+
+<!-- Popup Container (hidden by default) -->
+<div id="popup-container" class="popup-container" style="display: none;">
+  <div class="popup-backdrop"></div>
+  <div class="popup-content">
+    <button class="popup-close">&times;</button>
+    <div class="popup-body" id="popup-content-target"></div>
+  </div>
+</div>
+
+<!-- Dynamic Content Loading Script -->
+<script>
+  // Handle popup views
+  function loadView(view, options = {}) {
+    const { asPopup = false } = options;
+    
+    if (asPopup) {
+      fetch(`/${view}?popup=true`)
+        .then(res => res.text())
+        .then(html => {
+          document.getElementById('popup-content-target').innerHTML = html;
+          document.getElementById('popup-container').style.display = 'block';
+        });
+    } else {
+      window.location.href = `/${view}`;
+    }
+  }
+
+  // Close popup handler
+  document.querySelector('.popup-close').addEventListener('click', () => {
+    document.getElementById('popup-container').style.display = 'none';
+  });
+
+  // Close when clicking backdrop
+  document.querySelector('.popup-backdrop').addEventListener('click', () => {
+    document.getElementById('popup-container').style.display = 'none';
+  });
+
+  // Handle popup URL parameter
+  if (new URLSearchParams(window.location.search).has('popup')) {
+    document.getElementById('main-content').classList.add('popup-view');
+  }
+</script>
+
+<style>
+  /* Main Layout */
+  .main-wrapper {
+    min-height: calc(100vh - 120px);
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* Popup Styles */
+  .popup-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    display: none;
+  }
+
+  .popup-backdrop {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+  }
+
+  .popup-content {
+    position: relative;
+    background: white;
+    margin: 5% auto;
+    padding: 30px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: popupFadeIn 0.3s ease-out;
+  }
+
+  .popup-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 24px;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  /* Popup-specific view styling */
+  .popup-view {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    margin: 20px auto;
+    padding: 30px;
+    max-width: 600px;
+  }
+
+  @keyframes popupFadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .popup-content {
+      width: 95%;
+      padding: 20px;
+      margin: 2% auto;
+    }
+
+    .popup-view {
+      margin: 10px;
+      padding: 15px;
+    }
+  }
+</style>

@@ -1,0 +1,344 @@
+<!-- templates/default/base/pages/home.ejs -->
+<div class="home-container">
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="hero-content">
+        <h1>Welcome to Facebook Mirror</h1>
+        <p class="subtitle">Connect with friends and the world around you</p>
+        
+        <div class="cta-buttons">
+          <button class="btn-primary" onclick="loadView('signup')">
+            Create New Account
+          </button>
+          <button class="btn-secondary" onclick="loadView('login', { asPopup: true })">
+            Log In
+          </button>
+        </div>
+      </div>
+      <div class="hero-image">
+        <img src="/images/home-hero.png" alt="Social Connection">
+      </div>
+    </section>
+  
+    <!-- Features Grid -->
+    <section class="features-section">
+      <h2>What You Can Do</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <i class="fas fa-user-friends"></i>
+          <h3>Connect</h3>
+          <p>Find and connect with friends around the world</p>
+        </div>
+        
+        <div class="feature-card">
+          <i class="fas fa-newspaper"></i>
+          <h3>News Feed</h3>
+          <p>See updates from your network in real-time</p>
+        </div>
+        
+        <div class="feature-card">
+          <i class="fas fa-store"></i>
+          <h3>Marketplace</h3>
+          <p>Buy and sell items in your community</p>
+          <button class="btn-text" onclick="loadView('marketplace')">
+            Visit Marketplace
+          </button>
+        </div>
+      </div>
+    </section>
+  
+    <!-- Recent Activity -->
+    <section class="activity-section">
+      <div class="section-header">
+        <h2>Recent Activity</h2>
+        <button class="btn-text" onclick="loadView('manage')">
+          Manage Account
+        </button>
+      </div>
+      
+      <div class="activity-feed" id="activity-feed">
+        <div class="loading-spinner">
+          <i class="fas fa-spinner fa-spin"></i> Loading activity...
+        </div>
+      </div>
+    </section>
+  </div>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Load sample activity data
+      setTimeout(() => {
+        const activities = [
+          {
+            type: 'post',
+            user: 'Jane Doe',
+            action: 'shared a post',
+            time: '2 hours ago',
+            avatar: '/images/avatars/user1.jpg'
+          },
+          {
+            type: 'like',
+            user: 'John Smith',
+            action: 'liked your photo',
+            time: '5 hours ago',
+            avatar: '/images/avatars/user2.jpg'
+          },
+          {
+            type: 'friend',
+            user: 'Alex Johnson',
+            action: 'accepted your friend request',
+            time: '1 day ago',
+            avatar: '/images/avatars/user3.jpg'
+          }
+        ];
+        
+        renderActivities(activities);
+      }, 1000);
+    });
+  
+    function renderActivities(activities) {
+      const container = document.getElementById('activity-feed');
+      
+      if (activities.length === 0) {
+        container.innerHTML = '<div class="empty-state">No recent activity</div>';
+        return;
+      }
+      
+      container.innerHTML = activities.map(activity => `
+        <div class="activity-item">
+          <img src="${activity.avatar}" alt="${activity.user}" class="activity-avatar">
+          <div class="activity-details">
+            <strong>${activity.user}</strong> ${activity.action}
+            <div class="activity-time">${activity.time}</div>
+          </div>
+          ${activity.type === 'friend' ? 
+            '<button class="btn-small">Message</button>' : ''}
+        </div>
+      `).join('');
+    }
+  </script>
+  
+  <style>
+    .home-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+  
+    /* Hero Section */
+    .hero-section {
+      display: flex;
+      align-items: center;
+      gap: 40px;
+      margin-bottom: 60px;
+      flex-wrap: wrap;
+    }
+  
+    .hero-content {
+      flex: 1;
+      min-width: 300px;
+    }
+  
+    .hero-image {
+      flex: 1;
+      min-width: 300px;
+    }
+  
+    .hero-image img {
+      width: 100%;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+  
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 15px;
+      color: #1877f2;
+    }
+  
+    .subtitle {
+      font-size: 1.2rem;
+      color: #65676b;
+      margin-bottom: 30px;
+    }
+  
+    .cta-buttons {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+  
+    .btn-primary {
+      background: #1877f2;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      font-weight: 600;
+    }
+  
+    .btn-secondary {
+      background: #e7f3ff;
+      color: #1877f2;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      font-weight: 600;
+    }
+  
+    /* Features Section */
+    .features-section {
+      margin-bottom: 60px;
+    }
+  
+    .features-section h2 {
+      text-align: center;
+      margin-bottom: 40px;
+      font-size: 2rem;
+    }
+  
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+    }
+  
+    .feature-card {
+      background: white;
+      border-radius: 8px;
+      padding: 30px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+  
+    .feature-card:hover {
+      transform: translateY(-5px);
+    }
+  
+    .feature-card i {
+      font-size: 2.5rem;
+      color: #1877f2;
+      margin-bottom: 20px;
+    }
+  
+    .feature-card h3 {
+      margin-bottom: 15px;
+      font-size: 1.3rem;
+    }
+  
+    .feature-card p {
+      color: #65676b;
+      margin-bottom: 20px;
+    }
+  
+    .btn-text {
+      background: none;
+      border: none;
+      color: #1877f2;
+      cursor: pointer;
+      padding: 5px;
+      font-weight: 600;
+    }
+  
+    /* Activity Section */
+    .activity-section {
+      background: white;
+      border-radius: 8px;
+      padding: 30px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+  
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+  
+    .activity-feed {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+  
+    .activity-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 15px;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+  
+    .activity-item:hover {
+      background: #f0f2f5;
+    }
+  
+    .activity-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+  
+    .activity-details {
+      flex: 1;
+    }
+  
+    .activity-time {
+      font-size: 0.8rem;
+      color: #65676b;
+      margin-top: 3px;
+    }
+  
+    .btn-small {
+      background: #e7f3ff;
+      color: #1877f2;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+  
+    /* Loading States */
+    .loading-spinner {
+      text-align: center;
+      padding: 30px;
+      color: #65676b;
+    }
+  
+    .loading-spinner i {
+      margin-right: 10px;
+    }
+  
+    .empty-state {
+      text-align: center;
+      padding: 30px;
+      color: #65676b;
+    }
+  
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+      .hero-section {
+        flex-direction: column;
+      }
+      
+      .hero-content, .hero-image {
+        text-align: center;
+      }
+      
+      .cta-buttons {
+        justify-content: center;
+      }
+      
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
